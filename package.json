@@ -1,0 +1,37 @@
+{
+  "name": "@bjnstnkvc/carbon",
+  "version": "1.0.0",
+  "description": "JavaScript equivalent of Carbon date and time manipulation library.",
+  "main": "lib/main.js",
+  "source": "src/main.ts",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "jest --config jestconfig.json ./tests",
+    "build": "tsc",
+    "prod": "tsc && uglifyjs lib/main.js -c -m -o lib/main.min.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BJNSTNKVC/js-carbon.git"
+  },
+  "keywords": [
+    "date",
+    "time"
+  ],
+  "author": "Bojan Stankovic",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BJNSTNKVC/js-carbon/issues"
+  },
+  "homepage": "https://github.com/BJNSTNKVC/js-carbon#readme",
+  "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/node": "^20.11.19",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2",
+    "typescript": "^5.3.3",
+    "uglify-js": "^3.17.4"
+  }
+}
