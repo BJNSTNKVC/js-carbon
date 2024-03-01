@@ -219,3 +219,243 @@ describe('Carbon.format()', (): void => {
         expect(Carbon.parse('This is not a valid date').toString()).toEqual('Invalid Date');
     });
 });
+
+describe('Carbon.toDateString()', (): void => {
+    test('formats the instance as date correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateString()).toBe('2024-03-01');
+    });
+});
+
+describe('Carbon.toFormattedDateString()', (): void => {
+    test('formats the instance as formatted date correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toFormattedDateString()).toBe('Mar 1, 2024');
+    });
+});
+
+describe('Carbon.toFormattedDayDateString()', (): void => {
+    test('formats the instance with the day and a formatted date correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toFormattedDayDateString()).toBe('Fri, Mar 1, 2024');
+    });
+});
+
+describe('Carbon.toTimeString()', (): void => {
+    test('formats the instance as time with precision "microsecond" correctly', (): void => {
+        expect(() => Carbon.parse('2024-03-01 12:45:00', 'CET').toTimeString('microsecond')).toThrow();
+    });
+
+    test('formats the instance as time with precision "millisecond" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toTimeString('millisecond')).toBe('12:45:00.000');
+    });
+
+    test('formats the instance as time with precision "second" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toTimeString()).toBe('12:45:00');
+    });
+
+    test('formats the instance as time with precision "minute" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toTimeString('minute')).toBe('12:45');
+    });
+});
+
+describe('Carbon.toDateTimeString()', (): void => {
+    test('formats the instance as date and time with precision "microsecond" correctly', (): void => {
+        expect(() => Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeString('microsecond')).toThrow();
+    });
+
+    test('formats the instance as date and time with precision "millisecond" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeString('millisecond')).toBe('2024-03-01 12:45:00.000');
+    });
+
+    test('formats the instance as date and time with precision "second" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeString()).toBe('2024-03-01 12:45:00');
+    });
+
+    test('formats the instance as date and time with precision "minute" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeString('minute')).toBe('2024-03-01 12:45');
+    });
+});
+
+describe('Carbon.toDateTimeLocalString()', (): void => {
+    test('formats the instance as date and time T-separated with no timezone with precision "microsecond" correctly', (): void => {
+        expect(() => Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeLocalString('microsecond')).toThrow();
+    });
+
+    test('formats the instance as date and time T-separated with no timezone with precision "millisecond" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeLocalString('millisecond')).toBe('2024-03-01T12:45:00.000');
+    });
+
+    test('formats the instance as date and time T-separated with no timezone with precision "second" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeLocalString()).toBe('2024-03-01T12:45:00');
+    });
+
+    test('formats the instance as date and time T-separated with no timezone with precision "minute" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateTimeLocalString('minute')).toBe('2024-03-01T12:45');
+    });
+});
+
+describe('Carbon.toDayDateTimeString()', (): void => {
+    test('formats the instance with day, date, and time correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDayDateTimeString()).toBe('Fri, Mar 1, 2024 12:45 PM');
+    });
+});
+
+describe('Carbon.toAtomString()', (): void => {
+    test('formats the instance as ATOM correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toAtomString()).toBe('2024-03-01T12:45:00+01:00');
+    });
+});
+
+describe('Carbon.toCookieString()', (): void => {
+    test('formats the instance as COOKIE correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toCookieString()).toBe('Friday, 01-Mar-2024 12:45:00 UTC');
+    });
+});
+
+describe('Carbon.toISOString()', (): void => {
+    test('formats the instance as ISO8601 correctly without keeping offset', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString()).toBe('2024-03-01T12:45:00.000+01:00');
+    });
+
+    test('formats the instance as ISO8601 correctly and keeps the offset', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString(true)).toBe('2024-03-01T11:45:00.000Z');
+    });
+});
+
+describe('Carbon.toIso8601String()', (): void => {
+    test('formats the instance as ISO8601 correctly without extended format', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toIso8601String()).toBe('2024-03-01T12:45:00+0100');
+    });
+
+    test('formats the instance as ISO8601 correctly with extended format', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toIso8601String(true)).toBe('+2024-03-01T12:45:00+01:00');
+    });
+});
+
+describe('Carbon.toIso8601ZuluString()', (): void => {
+    test('converts the instance to UTC and returns as Zulu ISO8601 with precision "microsecond" correctly', (): void => {
+        expect(() => Carbon.parse('2024-03-01 12:45:00',).toIso8601ZuluString('microsecond')).toThrow();
+    });
+
+    test('converts the instance to UTC and returns as Zulu ISO8601 with precision "millisecond" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00',).toIso8601ZuluString('millisecond')).toBe('2024-03-01T11:45:00.000Z');
+    });
+
+    test('converts the instance to UTC and returns as Zulu ISO8601 with precision "second" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00',).toIso8601ZuluString()).toBe('2024-03-01T11:45:00Z');
+    });
+
+    test('converts the instance to UTC and returns as Zulu ISO8601 with precision "minute" correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00',).toIso8601ZuluString('minute')).toBe('2024-03-01T11:45Z');
+    });
+});
+
+describe('Carbon.toRfc822String()', (): void => {
+    test('formats the instance as RFC822 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc822String()).toBe('Fri, 01 Mar 24 12:45:00 +0100');
+    });
+});
+
+describe('Carbon.toRfc850String()', (): void => {
+    test('formats the instance as RFC850 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc850String()).toBe('Friday, 01-Mar-24 12:45:00 UTC');
+    });
+});
+
+describe('Carbon.toRfc1036String()', (): void => {
+    test('formats the instance as RFC1036 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc1036String()).toBe('Fri, 01 Mar 24 12:45:00 +0100');
+    });
+});
+
+describe('Carbon.toRfc1123String()', (): void => {
+    test('formats the instance as RFC1123 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc1123String()).toBe('Fri, 01 Mar 2024 12:45:00 +0100');
+    });
+});
+
+describe('Carbon.toRfc2822String()', (): void => {
+    test('formats the instance as RFC2822 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc2822String()).toBe('Fri, 01 Mar 2024 12:45:00 +0100');
+    });
+});
+
+describe('Carbon.toRfc3339String()', (): void => {
+    test('formats the instance as RFC3339 correctly without extended format', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc3339String()).toBe('2024-03-01T12:45:00+01:00');
+    });
+
+    test('formats the instance as RFC3339 correctly with extended format', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc3339String(true)).toBe('2024-03-01T12:45:00.000+01:00');
+    });
+});
+
+describe('Carbon.toRfc7231String()', (): void => {
+    test('formats the instance as RFC7231 correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00').toRfc7231String()).toBe('Fri, 01 Mar 2024 11:45:00 GMT');
+    });
+});
+
+describe('Carbon.toRssString()', (): void => {
+    test('formats the instance as RSS correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRssString()).toBe('Fri, 01 Mar 2024 12:45:00 +0100');
+    });
+});
+
+describe('Carbon.toW3cString()', (): void => {
+    test('formats the instance as W3C correctly', (): void => {
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toW3cString()).toBe('2024-03-01T12:45:00+01:00');
+    });
+});
+
+describe('Carbon.getTimeFormatByPrecision()', (): void => {
+    test('returns format H:i:s.u for precision "microsecond"', () => {
+        expect(new Carbon().getTimeFormatByPrecision('microsecond')).toBe('H:i:s.u');
+    });
+
+    test('returns format H:i:s.v for precision "millisecond"', () => {
+        expect(new Carbon().getTimeFormatByPrecision('millisecond')).toBe('H:i:s.v');
+    });
+
+    test('returns format H:i:s for precision "second"', () => {
+        expect(new Carbon().getTimeFormatByPrecision('second')).toBe('H:i:s');
+    });
+
+    test('returns format H:i for precision "minute"', () => {
+        expect(new Carbon().getTimeFormatByPrecision('minute')).toBe('H:i');
+    });
+
+    test('throws error for invalid precision', () => {
+        expect(() => new Carbon().getTimeFormatByPrecision('hour')).toThrow('Precision unit expected among: minute, second, millisecond and microsecond.');
+    });
+});
+
+describe('Carbon.toArray()', (): void => {
+    test('returns default array representation', () => {
+        expect(Carbon.now().toArray()).toEqual([]);
+    });
+});
+
+describe('Carbon.toObject()', (): void => {
+    test('returns default object representation', () => {
+        expect(Carbon.now().toObject()).toEqual({});
+    });
+});
+
+describe('Carbon.toDate()', (): void => {
+    test('returns a Date instance', () => {
+        expect(Carbon.now().toDate()).toBeInstanceOf(Date);
+    });
+
+    test('returns a Date object', () => {
+        const date: Date = new Date(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
+
+        expect(Carbon.now('UTC').toDate()).toEqual(date);
+    });
+});
+
+describe('Carbon.toString()', (): void => {
+    test('returns the formatted date string', () => {
+        const carbon: Carbon = Carbon.now();
+
+        expect(carbon.toString()).toBe(carbon.date);
+    });
+});
