@@ -168,7 +168,7 @@ describe('Carbon.format()', (): void => {
     });
 
     test('\'u\' returns microseconds', (): void => {
-        expect(() => Carbon.parse('2024-02-29 08:09:07.654321', 'CET').format('u')).toThrow('Microseconds are not supported at the moment.'); // Disabled temporarily
+        expect(() => Carbon.parse('2024-02-29 08:09:07.654321', 'CET').format('u')).toThrow('Microseconds are not supported.'); // Disabled temporarily
     });
 
     test('\'v\' returns milliseconds', (): void => {
@@ -312,11 +312,11 @@ describe('Carbon.toCookieString()', (): void => {
 
 describe('Carbon.toISOString()', (): void => {
     test('formats the instance as ISO8601 correctly without keeping offset', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString()).toBe('2024-03-01T12:45:00.000+01:00');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString()).toBe('2024-03-01T11:45:00.000Z');
     });
 
     test('formats the instance as ISO8601 correctly and keeps the offset', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString(true)).toBe('2024-03-01T11:45:00.000Z');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString(true)).toBe('2024-03-01T12:45:00.000+01:00');
     });
 });
 
@@ -408,35 +408,54 @@ describe('Carbon.toW3cString()', (): void => {
 
 describe('Carbon.getTimeFormatByPrecision()', (): void => {
     test('returns format H:i:s.u for precision "microsecond"', () => {
-        expect(new Carbon().getTimeFormatByPrecision('microsecond')).toBe('H:i:s.u');
+        expect(Carbon.parse().getTimeFormatByPrecision('microsecond')).toBe('H:i:s.u');
     });
 
     test('returns format H:i:s.v for precision "millisecond"', () => {
-        expect(new Carbon().getTimeFormatByPrecision('millisecond')).toBe('H:i:s.v');
+        expect(Carbon.parse().getTimeFormatByPrecision('millisecond')).toBe('H:i:s.v');
     });
 
     test('returns format H:i:s for precision "second"', () => {
-        expect(new Carbon().getTimeFormatByPrecision('second')).toBe('H:i:s');
+        expect(Carbon.parse().getTimeFormatByPrecision('second')).toBe('H:i:s');
     });
 
     test('returns format H:i for precision "minute"', () => {
-        expect(new Carbon().getTimeFormatByPrecision('minute')).toBe('H:i');
+        expect(Carbon.parse().getTimeFormatByPrecision('minute')).toBe('H:i');
     });
 
     test('throws error for invalid precision', () => {
-        expect(() => new Carbon().getTimeFormatByPrecision('hour')).toThrow('Precision unit expected among: minute, second, millisecond and microsecond.');
+        expect(() => Carbon.parse().getTimeFormatByPrecision('hour')).toThrow('Precision unit expected among: minute, second, millisecond and microsecond.');
     });
 });
 
 describe('Carbon.toArray()', (): void => {
     test('returns default array representation', () => {
-        expect(Carbon.now().toArray()).toEqual([]);
+        expect(() => Carbon.parse().toArray()).toThrow('toArray method is not supported.');
     });
 });
 
 describe('Carbon.toObject()', (): void => {
     test('returns default object representation', () => {
-        expect(Carbon.now().toObject()).toEqual({});
+        expect(Carbon.parse('2024-03-01 12:45:00').toObject()).toMatchObject({
+            year     : 2024,
+            month    : 3,
+            day      : 1,
+            dayOfWeek: 5,
+            dayOfYear: 60,
+            hour     : 12,
+            minute   : 45,
+            second   : 0,
+            micro    : undefined,
+            timestamp: 1709293500000,
+            formatted: '2024-03-01 12:45:00',
+            timezone : 'UTC (+01:00)',
+        });
+    });
+});
+
+describe('Carbon.toJson()', (): void => {
+    test('return the ISO-8601 string with UTC timezone.', () => {
+        expect(Carbon.parse('2024-03-01 12:45:00').toJson()).toBe('2024-03-01T11:45:00.000Z');
     });
 });
 
