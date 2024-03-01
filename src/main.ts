@@ -1,3 +1,5 @@
+type PrecisionUnit = 'microsecond' | 'millisecond' | 'second' | 'minute';
+
 class Str {
     /**
      * Pad the left side of a string with another.
@@ -75,6 +77,118 @@ class Carbon {
      * @type { string | null }
      */
     #timezone: string | null;
+
+    /**
+     * Standard to represent date and time information in XML feeds.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #ATOM: string = 'Y-m-d\\TH:i:sP';
+
+    /**
+     * Standard to represent date and time information in Cookies.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #COOKIE: string = 'l, d-M-Y H:i:s T';
+
+    /**
+     * International standard covering the worldwide exchange and communication of date and time-related data.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #ISO8601: string = 'Y-m-d\\TH:i:sO';
+
+    /**
+     * Expanded international standard covering the worldwide exchange and communication of date and time-related data.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #ISO8601_EXPANDED: string = 'X-m-d\\TH:i:sP';
+
+    /**
+     * Standard for the Format of Arpa Internet Text Messages.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC822: string = 'D, d M y H:i:s O';
+
+    /**
+     * Standard for Interchange of USENET Messages. (June 1983)
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC850: string = 'l, d-M-y H:i:s T';
+
+    /**
+     * Standard for Interchange of USENET Messages. (December 1987)
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC1036: string = 'D, d M y H:i:s O';
+
+    /**
+     * Standard to represent date and time information in Internet protocols.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC1123: string = 'D, d M Y H:i:s O';
+
+    /**
+     * Standard for Internet Message Format.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC2822: string = 'D, d M Y H:i:s O';
+
+    /**
+     * Standard for Date and Time on the Internet.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC3339: string = 'Y-m-d\\TH:i:sP';
+
+    /**
+     * Extended standard for Date and Time on the Internet.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC3339_EXTENDED: string = 'Y-m-d\\TH:i:s.vP';
+
+    /**
+     * Standard to represent date and time information in Hypertext Transfer Protocol.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RFC7231: string = 'D, d M Y H:i:s \\G\\M\\T';
+
+    /**
+     * Standard to represent date and time information in RSS feeds.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #RSS: string = 'D, d M Y H:i:s O';
+
+    /**
+     * Standard to represent date and time information in a machine-readable and unambiguous manner.
+     *
+     * @private
+     * @type { string }
+     */
+    readonly #W3C: string = 'Y-m-d\\TH:i:sP';
 
     /**
      * A date/time string.
@@ -480,6 +594,280 @@ class Carbon {
         }
 
         return date;
+    }
+
+    /**
+     * Format the instance as date.
+     *
+     * @return { string }
+     */
+    toDateString(): string {
+        return this.format('Y-m-d');
+    }
+
+    /**
+     * Format the instance as readable date.
+     *
+     * @return { string }
+     */
+    toFormattedDateString(): string {
+        return this.format('M j, Y');
+    }
+
+    /**
+     * Format the instance with the day, and a readable date.
+     *
+     * @return { string }
+     */
+    toFormattedDayDateString(): string {
+        return this.format('D, M j, Y');
+    }
+
+    /**
+     * Format the instance as time.
+     *
+     * @param { string } precision
+     *
+     * @return { string }
+     */
+    toTimeString(precision: PrecisionUnit = 'second'): string {
+        return this.format(this.getTimeFormatByPrecision(precision));
+    }
+
+    /**
+     * Format the instance as date and time.
+     *
+     * @param { string } precision
+     *
+     * @return { string }
+     */
+    toDateTimeString(precision: PrecisionUnit = 'second'): string {
+        return this.format(`Y-m-d ${this.getTimeFormatByPrecision(precision)}`);
+    }
+
+    /**
+     * Format the instance as date and time T-separated with no timezone.
+     *
+     * @param { string } precision
+     *
+     * @return { string }
+     */
+    toDateTimeLocalString(precision: PrecisionUnit = 'second'): string {
+        return this.format(`Y-m-d\\T${this.getTimeFormatByPrecision(precision)}`);
+    }
+
+    /**
+     * Format the instance with day, date and time.
+     *
+     * @return { string }
+     */
+    toDayDateTimeString(): string {
+        return this.format('D, M j, Y g:i A');
+    }
+
+    /**
+     * Format the instance as ATOM.
+     *
+     * @return { string }
+     */
+    toAtomString(): string {
+        return this.format(this.#ATOM);
+    }
+
+    /**
+     * Format the instance as COOKIE.
+     *
+     * @return { string }
+     */
+    toCookieString(): string {
+        return this.format(this.#COOKIE);
+    }
+
+    /**
+     * Format the instance as ISO8601.
+     *
+     * @param { boolean } keepOffset
+     *
+     * @return { string }
+     */
+    toISOString(keepOffset: boolean = false): string {
+        if (keepOffset) {
+            this.#timezone = 'UTC';
+
+            return this.format('Y-m-d\\TH:i:s.vp');
+        }
+
+        return this.format('Y-m-d\\TH:i:s.vP');
+    }
+
+    /**
+     * Format the instance as ISO8601.
+     *
+     * @param { boolean } extended
+     *
+     * @return { string }
+     */
+    toIso8601String(extended: boolean = false): string {
+        return extended
+            ? this.format(this.#ISO8601_EXPANDED)
+            : this.format(this.#ISO8601);
+    }
+
+    /**
+     * Convert the instance to UTC and return as Zulu ISO8601.
+     *
+     * @param { string } precision
+     *
+     * @return { string }
+     */
+    toIso8601ZuluString(precision: PrecisionUnit = 'second'): string {
+        this.#timezone = 'UTC';
+
+        return this.format(`Y-m-d\\T${this.getTimeFormatByPrecision(precision)}\\Z`);
+    }
+
+    /**
+     * Format the instance as RFC822.
+     *
+     * @return { string }
+     */
+    toRfc822String(): string {
+        return this.format(this.#RFC822);
+    }
+
+    /**
+     * Format the instance as RFC850.
+     *
+     * @return { string }
+     */
+    toRfc850String(): string {
+        return this.format(this.#RFC850);
+    }
+
+    /**
+     * Format the instance as RFC1036.
+     *
+     * @return { string }
+     */
+    toRfc1036String(): string {
+        return this.format(this.#RFC1036);
+    }
+
+    /**
+     * Format the instance as RFC1123.
+     *
+     * @return { string }
+     */
+    toRfc1123String(): string {
+        return this.format(this.#RFC1123);
+    }
+
+    /**
+     * Format the instance as RFC2822.
+     *
+     * @return { string }
+     */
+    toRfc2822String(): string {
+        return this.format(this.#RFC2822);
+    }
+
+    /**
+     * Format the instance as RFC3339.
+     *
+     * @param { boolean } extended
+     *
+     * @return { string }
+     */
+    toRfc3339String(extended: boolean = false): string {
+        return extended
+            ? this.format(this.#RFC3339_EXTENDED)
+            : this.format(this.#RFC3339);
+    }
+
+    /**
+     * Format the instance as RFC7231.
+     *
+     * @return { string }
+     */
+    toRfc7231String(): string {
+        this.#timezone = 'UTC';
+
+        return this.format(this.#RFC7231);
+    }
+
+    /**
+     * Format the instance as RSS.
+     *
+     * @return { string }
+     */
+    toRssString(): string {
+        return this.format(this.#RSS);
+    }
+
+    /**
+     * Format the instance as W3C.
+     *
+     * @return { string }
+     */
+    toW3cString(): string {
+        return this.format(this.#W3C);
+    }
+
+    /**
+     * Return a format from H:i to H:i:s.u according to given unit precision.
+     *
+     * @param { string } precision
+     *
+     * @return { string }
+     */
+    getTimeFormatByPrecision(precision: PrecisionUnit): string {
+        switch (precision) {
+            case 'microsecond':
+                return 'H:i:s.u';
+
+            case 'millisecond':
+                return 'H:i:s.v';
+
+            case 'second':
+                return 'H:i:s';
+
+            case 'minute':
+                return 'H:i';
+
+            default:
+                throw new Error('Precision unit expected among: minute, second, millisecond and microsecond.');
+        }
+    }
+
+    /**
+     * Get default array representation.
+     *
+     * @returns { string[] }
+     */
+    toArray(): string[] {
+        return [];
+    }
+
+    /**
+     * Get default object representation.
+     *
+     * @returns { object }
+     */
+    toObject(): object {
+        return {};
+    }
+
+    // toJson(): string {
+    //     return '';
+    // }
+
+    /**
+     * Return native Date object matching the current instance.
+     *
+     * @returns { Date }
+     */
+    toDate(): Date {
+        return new Date(new Date().toLocaleString('en-US', { timeZone: this.#timezone ?? undefined }));
     }
 
     /**
