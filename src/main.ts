@@ -1,20 +1,11 @@
-type PrecisionUnit = 'microsecond' | 'millisecond' | 'second' | 'minute';
-
-type Timezone = 'CET' | 'CST6CDT' | 'Cuba' | 'EET' | 'Egypt' | 'Eire' | 'EST' | 'EST5EDT' | 'GB' | 'GB-Eire' | 'GMT' | 'GMT+0' | 'GMT-0' | 'GMT0' | 'Greenwich' | 'Hongkong' | 'HST' | 'Iceland' | 'Iran' | 'Israel' | 'Jamaica' | 'Japan' | 'Kwajalein' | 'Libya' | 'MET' | 'MST' | 'MST7MDT' | 'Navajo' | 'NZ' | 'NZ-CHAT' | 'Poland' | 'Portugal' | 'PRC' | 'PST8PDT' | 'ROC' | 'ROK' | 'Singapore' | 'Turkey' | 'UCT' | 'Universal' | 'UTC' | 'W-SU' | 'WET' | 'Zulu' | 'Africa/Abidjan' | 'Africa/Accra' | 'Africa/Addis_Ababa' | 'Africa/Algiers' | 'Africa/Asmera' | 'Africa/Bamako' | 'Africa/Bangui' | 'Africa/Banjul' | 'Africa/Bissau' | 'Africa/Blantyre' | 'Africa/Brazzaville' | 'Africa/Bujumbura' | 'Africa/Cairo' | 'Africa/Casablanca' | 'Africa/Ceuta' | 'Africa/Conakry' | 'Africa/Dakar' | 'Africa/Dar_es_Salaam' | 'Africa/Djibouti' | 'Africa/Douala' | 'Africa/El_Aaiun' | 'Africa/Freetown' | 'Africa/Gaborone' | 'Africa/Harare' | 'Africa/Johannesburg' | 'Africa/Juba' | 'Africa/Kampala' | 'Africa/Khartoum' | 'Africa/Kigali' | 'Africa/Kinshasa' | 'Africa/Lagos' | 'Africa/Libreville' | 'Africa/Lome' | 'Africa/Luanda' | 'Africa/Lubumbashi' | 'Africa/Lusaka' | 'Africa/Malabo' | 'Africa/Maputo' | 'Africa/Maseru' | 'Africa/Mbabane' | 'Africa/Mogadishu' | 'Africa/Monrovia' | 'Africa/Nairobi' | 'Africa/Ndjamena' | 'Africa/Niamey' | 'Africa/Nouakchott' | 'Africa/Ouagadougou' | 'Africa/Porto-Novo' | 'Africa/Sao_Tome' | 'Africa/Tripoli' | 'Africa/Tunis' | 'Africa/Windhoek' | 'America/Adak' | 'America/Anchorage' | 'America/Anguilla' | 'America/Antigua' | 'America/Araguaina' | 'America/Argentina/La_Rioja' | 'America/Argentina/Rio_Gallegos' | 'America/Argentina/Salta' | 'America/Argentina/San_Juan' | 'America/Argentina/San_Luis' | 'America/Argentina/Tucuman' | 'America/Argentina/Ushuaia' | 'America/Aruba' | 'America/Asuncion' | 'America/Bahia' | 'America/Bahia_Banderas' | 'America/Barbados' | 'America/Belem' | 'America/Belize' | 'America/Blanc-Sablon' | 'America/Boa_Vista' | 'America/Bogota' | 'America/Boise' | 'America/Buenos_Aires' | 'America/Cambridge_Bay' | 'America/Campo_Grande' | 'America/Cancun' | 'America/Caracas' | 'America/Catamarca' | 'America/Cayenne' | 'America/Cayman' | 'America/Chicago' | 'America/Chihuahua' | 'America/Ciudad_Juarez' | 'America/Coral_Harbour' | 'America/Cordoba' | 'America/Costa_Rica' | 'America/Creston' | 'America/Cuiaba' | 'America/Curacao' | 'America/Danmarkshavn' | 'America/Dawson' | 'America/Dawson_Creek' | 'America/Denver' | 'America/Detroit' | 'America/Dominica' | 'America/Edmonton' | 'America/Eirunepe' | 'America/El_Salvador' | 'America/Fort_Nelson' | 'America/Fortaleza' | 'America/Glace_Bay' | 'America/Godthab' | 'America/Goose_Bay' | 'America/Grand_Turk' | 'America/Grenada' | 'America/Guadeloupe' | 'America/Guatemala' | 'America/Guayaquil' | 'America/Guyana' | 'America/Halifax' | 'America/Havana' | 'America/Hermosillo' | 'America/Indiana/Knox' | 'America/Indiana/Marengo' | 'America/Indiana/Petersburg' | 'America/Indiana/Tell_City' | 'America/Indiana/Vevay' | 'America/Indiana/Vincennes' | 'America/Indiana/Winamac' | 'America/Indianapolis' | 'America/Inuvik' | 'America/Iqaluit' | 'America/Jamaica' | 'America/Jujuy' | 'America/Juneau' | 'America/Kentucky/Monticello' | 'America/Kralendijk' | 'America/La_Paz' | 'America/Lima' | 'America/Los_Angeles' | 'America/Louisville' | 'America/Lower_Princes' | 'America/Maceio' | 'America/Managua' | 'America/Manaus' | 'America/Marigot' | 'America/Martinique' | 'America/Matamoros' | 'America/Mazatlan' | 'America/Mendoza' | 'America/Menominee' | 'America/Merida' | 'America/Metlakatla' | 'America/Mexico_City' | 'America/Miquelon' | 'America/Moncton' | 'America/Monterrey' | 'America/Montevideo' | 'America/Montserrat' | 'America/Nassau' | 'America/New_York' | 'America/Nipigon' | 'America/Nome' | 'America/Noronha' | 'America/North_Dakota/Beulah' | 'America/North_Dakota/Center' | 'America/North_Dakota/New_Salem' | 'America/Ojinaga' | 'America/Panama' | 'America/Pangnirtung' | 'America/Paramaribo' | 'America/Phoenix' | 'America/Port-au-Prince' | 'America/Port_of_Spain' | 'America/Porto_Velho' | 'America/Puerto_Rico' | 'America/Punta_Arenas' | 'America/Rainy_River' | 'America/Rankin_Inlet' | 'America/Recife' | 'America/Regina' | 'America/Resolute' | 'America/Rio_Branco' | 'America/Santa_Isabel' | 'America/Santarem' | 'America/Santiago' | 'America/Santo_Domingo' | 'America/Sao_Paulo' | 'America/Scoresbysund' | 'America/Sitka' | 'America/St_Barthelemy' | 'America/St_Johns' | 'America/St_Kitts' | 'America/St_Lucia' | 'America/St_Thomas' | 'America/St_Vincent' | 'America/Swift_Current' | 'America/Tegucigalpa' | 'America/Thule' | 'America/Thunder_Bay' | 'America/Tijuana' | 'America/Toronto' | 'America/Tortola' | 'America/Vancouver' | 'America/Whitehorse' | 'America/Winnipeg' | 'America/Yakutat' | 'America/Yellowknife' | 'Antarctica/Casey' | 'Antarctica/Davis' | 'Antarctica/DumontDUrville' | 'Antarctica/Macquarie' | 'Antarctica/Mawson' | 'Antarctica/McMurdo' | 'Antarctica/Palmer' | 'Antarctica/Rothera' | 'Antarctica/Syowa' | 'Antarctica/Troll' | 'Antarctica/Vostok' | 'Arctic/Longyearbyen' | 'Asia/Aden' | 'Asia/Almaty' | 'Asia/Amman' | 'Asia/Anadyr' | 'Asia/Aqtau' | 'Asia/Aqtobe' | 'Asia/Ashgabat' | 'Asia/Atyrau' | 'Asia/Baghdad' | 'Asia/Bahrain' | 'Asia/Baku' | 'Asia/Bangkok' | 'Asia/Barnaul' | 'Asia/Beirut' | 'Asia/Bishkek' | 'Asia/Brunei' | 'Asia/Calcutta' | 'Asia/Chita' | 'Asia/Choibalsan' | 'Asia/Colombo' | 'Asia/Damascus' | 'Asia/Dhaka' | 'Asia/Dili' | 'Asia/Dubai' | 'Asia/Dushanbe' | 'Asia/Famagusta' | 'Asia/Gaza' | 'Asia/Hebron' | 'Asia/Hong_Kong' | 'Asia/Hovd' | 'Asia/Irkutsk' | 'Asia/Jakarta' | 'Asia/Jayapura' | 'Asia/Jerusalem' | 'Asia/Kabul' | 'Asia/Kamchatka' | 'Asia/Karachi' | 'Asia/Katmandu' | 'Asia/Khandyga' | 'Asia/Krasnoyarsk' | 'Asia/Kuala_Lumpur' | 'Asia/Kuching' | 'Asia/Kuwait' | 'Asia/Macau' | 'Asia/Magadan' | 'Asia/Makassar' | 'Asia/Manila' | 'Asia/Muscat' | 'Asia/Nicosia' | 'Asia/Novokuznetsk' | 'Asia/Novosibirsk' | 'Asia/Omsk' | 'Asia/Oral' | 'Asia/Phnom_Penh' | 'Asia/Pontianak' | 'Asia/Pyongyang' | 'Asia/Qatar' | 'Asia/Qostanay' | 'Asia/Qyzylorda' | 'Asia/Rangoon' | 'Asia/Riyadh' | 'Asia/Saigon' | 'Asia/Sakhalin' | 'Asia/Samarkand' | 'Asia/Seoul' | 'Asia/Shanghai' | 'Asia/Singapore' | 'Asia/Srednekolymsk' | 'Asia/Taipei' | 'Asia/Tashkent' | 'Asia/Tbilisi' | 'Asia/Tehran' | 'Asia/Thimphu' | 'Asia/Tokyo' | 'Asia/Tomsk' | 'Asia/Ulaanbaatar' | 'Asia/Urumqi' | 'Asia/Ust-Nera' | 'Asia/Vientiane' | 'Asia/Vladivostok' | 'Asia/Yakutsk' | 'Asia/Yekaterinburg' | 'Asia/Yerevan' | 'Atlantic/Azores' | 'Atlantic/Bermuda' | 'Atlantic/Canary' | 'Atlantic/Cape_Verde' | 'Atlantic/Faeroe' | 'Atlantic/Madeira' | 'Atlantic/Reykjavik' | 'Atlantic/South_Georgia' | 'Atlantic/St_Helena' | 'Atlantic/Stanley' | 'Australia/Adelaide' | 'Australia/Brisbane' | 'Australia/Broken_Hill' | 'Australia/Currie' | 'Australia/Darwin' | 'Australia/Eucla' | 'Australia/Hobart' | 'Australia/Lindeman' | 'Australia/Lord_Howe' | 'Australia/Melbourne' | 'Australia/Perth' | 'Australia/Sydney' | 'Europe/Amsterdam' | 'Europe/Andorra' | 'Europe/Astrakhan' | 'Europe/Athens' | 'Europe/Belgrade' | 'Europe/Berlin' | 'Europe/Bratislava' | 'Europe/Brussels' | 'Europe/Bucharest' | 'Europe/Budapest' | 'Europe/Busingen' | 'Europe/Chisinau' | 'Europe/Copenhagen' | 'Europe/Dublin' | 'Europe/Gibraltar' | 'Europe/Guernsey' | 'Europe/Helsinki' | 'Europe/Isle_of_Man' | 'Europe/Istanbul' | 'Europe/Jersey' | 'Europe/Kaliningrad' | 'Europe/Kiev' | 'Europe/Kirov' | 'Europe/Lisbon' | 'Europe/Ljubljana' | 'Europe/London' | 'Europe/Luxembourg' | 'Europe/Madrid' | 'Europe/Malta' | 'Europe/Mariehamn' | 'Europe/Minsk' | 'Europe/Monaco' | 'Europe/Moscow' | 'Europe/Oslo' | 'Europe/Paris' | 'Europe/Podgorica' | 'Europe/Prague' | 'Europe/Riga' | 'Europe/Rome' | 'Europe/Samara' | 'Europe/San_Marino' | 'Europe/Sarajevo' | 'Europe/Saratov' | 'Europe/Simferopol' | 'Europe/Skopje' | 'Europe/Sofia' | 'Europe/Stockholm' | 'Europe/Tallinn' | 'Europe/Tirane' | 'Europe/Ulyanovsk' | 'Europe/Uzhgorod' | 'Europe/Vaduz' | 'Europe/Vatican' | 'Europe/Vienna' | 'Europe/Vilnius' | 'Europe/Volgograd' | 'Europe/Warsaw' | 'Europe/Zagreb' | 'Europe/Zaporozhye' | 'Europe/Zurich' | 'Indian/Antananarivo' | 'Indian/Chagos' | 'Indian/Christmas' | 'Indian/Cocos' | 'Indian/Comoro' | 'Indian/Kerguelen' | 'Indian/Mahe' | 'Indian/Maldives' | 'Indian/Mauritius' | 'Indian/Mayotte' | 'Indian/Reunion' | 'Pacific/Apia' | 'Pacific/Auckland' | 'Pacific/Bougainville' | 'Pacific/Chatham' | 'Pacific/Easter' | 'Pacific/Efate' | 'Pacific/Enderbury' | 'Pacific/Fakaofo' | 'Pacific/Fiji' | 'Pacific/Funafuti' | 'Pacific/Galapagos' | 'Pacific/Gambier' | 'Pacific/Guadalcanal' | 'Pacific/Guam' | 'Pacific/Honolulu' | 'Pacific/Johnston' | 'Pacific/Kiritimati' | 'Pacific/Kosrae' | 'Pacific/Kwajalein' | 'Pacific/Majuro' | 'Pacific/Marquesas' | 'Pacific/Midway' | 'Pacific/Nauru' | 'Pacific/Niue' | 'Pacific/Norfolk' | 'Pacific/Noumea' | 'Pacific/Pago_Pago' | 'Pacific/Palau' | 'Pacific/Pitcairn' | 'Pacific/Ponape' | 'Pacific/Port_Moresby' | 'Pacific/Rarotonga' | 'Pacific/Saipan' | 'Pacific/Tahiti' | 'Pacific/Tarawa' | 'Pacific/Tongatapu' | 'Pacific/Truk' | 'Pacific/Wake' | 'Pacific/Wallis';
-
-type DateRepresentation = {
-    year: number
-    month: number
-    day: number
-    dayOfWeek: number
-    dayOfYear: number
-    hour: number
-    minute: number
-    second: number
-    micro: number | undefined,
-    timestamp: number
-    formatted: string
-    timezone: string
+enum DayOfTheWeek {
+    Monday = 1,
+    Tuesday = 2,
+    Wednesday = 3,
+    Thursday = 4,
+    Friday = 5,
+    Saturday = 6,
+    Sunday = 7,
 }
 
 class Str {
@@ -221,8 +212,8 @@ class Carbon {
      * @param { string | null } date
      * @param { string | null } timezone
      */
-    constructor(date: string | null = null, timezone: string | null = null) {
-        this.#date     = !date || date === 'now' ? new Date() : new Date(date);
+    constructor(date: string | null = null, timezone: Timezone | null = null) {
+        this.#date = date === null || date === 'now' ? new Date() : new Date(date);
         this.#timezone = timezone;
 
         this.date = this.format('Y-m-d H:i:s.v T (P)');
@@ -260,35 +251,33 @@ class Carbon {
      */
     format(format: string): string {
         const options: object = {
-            year                  : 'numeric',
-            month                 : 'numeric',
-            day                   : 'numeric',
-            hour                  : 'numeric',
-            minute                : 'numeric',
-            second                : 'numeric',
-            fractionalSecondDigits: 3,
-            hour12                : false,
-            timeZone              : this.#timezone ?? undefined,
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            hour: 'numeric',
+            minute: 'numeric',
+            second: 'numeric',
+            hour12: undefined,
+            timeZone: this.#timezone ?? undefined,
         };
 
         if (this.#date.toString() === 'Invalid Date') {
             return 'Invalid Date';
         }
 
-        let date: string     = '';
-        let days: string[]   = [];
+        let date: string = '';
+        let days: string[] = [];
         let months: string[] = [];
 
         const now: Date = new Date(this.#date.toLocaleString('en-US', options));
 
-        const month: number         = now.getMonth();
-        const dayOfTheWeek: number  = now.getDay();
+        const month: number = now.getMonth();
+        const dayOfTheWeek: number = now.getDay();
         const dayOfTheMonth: number = now.getDate();
-        const year: number          = now.getFullYear();
-        const hours: number         = now.getHours();
-        const minutes: number       = now.getMinutes();
-        const seconds: number       = now.getSeconds();
-        const milliseconds: number  = now.getMilliseconds();
+        const year: number = now.getFullYear();
+        const hours: number = now.getHours();
+        const minutes: number = now.getMinutes();
+        const seconds: number = now.getSeconds();
 
         const elements: RegExpMatchArray | null = format.match(/\\?.|./g);
 
@@ -322,7 +311,7 @@ class Carbon {
 
                 // ISO 8601 numeric representation of the day of the week (e.g., 1 (for Monday) through 7 (for Sunday))
                 case 'N':
-                    date += dayOfTheWeek;
+                    date += dayOfTheWeek === 0 ? DayOfTheWeek.Sunday : dayOfTheWeek;
 
                     break;
 
@@ -341,9 +330,9 @@ class Carbon {
 
                 // Numeric representation of the day of the week (e.g., The day of the year (starting from 0))
                 case 'z': {
-                    let start: Date          = new Date(year, 0, 0);
-                    let diff: number         = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-                    let day: number          = 1000 * 60 * 60 * 24;
+                    let start: Date = new Date(year, 0, 0);
+                    let diff: number = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+                    let day: number = 1000 * 60 * 60 * 24;
                     const currentDay: number = Math.floor(diff / day);
                     date += currentDay - 1;
 
@@ -352,9 +341,9 @@ class Carbon {
                 // ISO 8601 week number of year, weeks starting on Monday (e.g., 42 (the 42nd week in the year))
                 case 'W': {
                     let parsedDate: Date = new Date(Date.UTC(year, month, dayOfTheMonth));
-                    let weekDay: number  = parsedDate.getUTCDay() || 7;
+                    let weekDay: number = parsedDate.getUTCDay() || 7;
                     parsedDate.setUTCDate(parsedDate.getUTCDate() + 4 - weekDay);
-                    let yearStart: Date    = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
+                    let yearStart: Date = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
                     let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / 86400000) + 1) / 7);
 
                     date += Str.padLeft((weekNumber as unknown as string), 1, '0');
@@ -449,7 +438,7 @@ class Carbon {
 
                 // Swatch Internet time (e.g., 000 through 999)
                 case 'B': {
-                    const utcHours   = now.getUTCHours();
+                    const utcHours = now.getUTCHours();
                     const utcMinutes = now.getUTCMinutes();
                     const utcSeconds = now.getUTCSeconds();
 
@@ -499,7 +488,7 @@ class Carbon {
 
                 // Milliseconds. (e.g., 654)
                 case 'v': {
-                    date += Str.padLeft(milliseconds.toString(), 3, '0');
+                    date += Str.padLeft(this.#date.getMilliseconds().toString(), 3, '0');
 
                     break;
                 }
@@ -514,7 +503,7 @@ class Carbon {
                 // Whether the date is in daylight saving time (e.g., 1 if Daylight Saving Time, 0 otherwise)
                 case 'I': {
                     let january: number = new Date(year, 0, 1).getTimezoneOffset();
-                    let july: number    = new Date(year, 6, 1).getTimezoneOffset();
+                    let july: number = new Date(year, 6, 1).getTimezoneOffset();
 
                     date += Math.max(january, july) !== now.getTimezoneOffset() ? '1' : '0';
 
@@ -611,6 +600,105 @@ class Carbon {
     }
 
     /**
+     * Determines if the instance's date and time are in the local timezone.
+     *
+     * @returns { boolean }
+     */
+    isLocal(): boolean {
+        return this.format('Z') as unknown as number / 60 === this.#date.getTimezoneOffset() * -1;
+    }
+
+    /**
+     * Determines if the instance's date and time are in the UTC timezone.
+     *
+     * @returns { boolean }
+     */
+    isUtc(): boolean {
+        return this.format('Z') as unknown as number / 60 === 0;
+    }
+
+    /**
+     * Determines if the instance's date and time is valid.
+     *
+     * @returns { boolean }
+     */
+    isValid(): boolean {
+        return !isNaN(this.#date.getFullYear()) && (this.#date.getFullYear() !== 0);
+    }
+
+    /**
+     * Determines if the instance's date and time in a daylight saving time.
+     *
+     * @returns { boolean }
+     */
+    isDst(): boolean {
+        return this.format('I') === '1';
+    }
+
+    /**
+     * Determines if the instance's day is Monday.
+     *
+     * @returns { boolean }
+     */
+    isMonday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Monday;
+    }
+
+    /**
+     * Determines if the instance's day is Tuesday.
+     *
+     * @returns { boolean }
+     */
+    isTuesday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Tuesday;
+    }
+
+    /**
+     * Determines if the instance's day is Wednesday.
+     *
+     * @returns { boolean }
+     */
+    isWednesday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Wednesday;
+    }
+
+    /**
+     * Determines if the instance's day is Thursday.
+     *
+     * @returns { boolean }
+     */
+    isThursday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Thursday;
+    }
+
+    /**
+     * Determines if the instance's day is Friday.
+     *
+     * @returns { boolean }
+     */
+    isFriday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Friday;
+    }
+
+    /**
+     * Determines if the instance's day is Saturday.
+     *
+     * @returns { boolean }
+     */
+    isSaturday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Saturday;
+    }
+
+    /**
+     * Determines if the instance's day is Sunday.
+     *
+     * @returns { boolean }
+     */
+    isSunday(): boolean {
+        return parseInt(this.format('N')) == DayOfTheWeek.Sunday;
+    }
+
+    /**
      * Format the instance as date.
      *
      * @return { string }
@@ -704,7 +792,7 @@ class Carbon {
      *
      * @return { string }
      */
-    toISOString(keepOffset: boolean = false): string {
+    toIsoString(keepOffset: boolean = false): string {
         if (!keepOffset) {
             this.#timezone = 'UTC';
 
@@ -865,22 +953,22 @@ class Carbon {
     /**
      * Get default object representation.
      *
-     * @returns { object<{year: number, month: number, day: number, dayOfWeek: number, dayOfYear: number, hour: number, minute: number, second: number, micro: number | undefined, timestamp: number, formatted: string, timezone: string}> }
+     * @returns { object }
      */
     toObject(): DateRepresentation {
         return {
-            year     : this.#date.getFullYear(),
-            month    : this.#date.getMonth() + 1,
-            day      : this.#date.getDate(),
-            dayOfWeek: Number(this.format('N')),
-            dayOfYear: Number(this.format('z')),
-            hour     : this.#date.getHours(),
-            minute   : this.#date.getMinutes(),
-            second   : this.#date.getSeconds(),
-            micro    : undefined,
+            year: this.#date.getFullYear(),
+            month: this.#date.getMonth() + 1,
+            day: this.#date.getDate(),
+            dayOfWeek: parseInt(this.format('N')),
+            dayOfYear: parseInt(this.format('z')),
+            hour: this.#date.getHours(),
+            minute: this.#date.getMinutes(),
+            second: this.#date.getSeconds(),
+            micro: undefined,
             timestamp: this.#date.valueOf(),
             formatted: this.format('Y-m-d H:i:s'),
-            timezone : this.format('T (P)'),
+            timezone: this.format('T (P)'),
         };
     }
 
@@ -890,7 +978,7 @@ class Carbon {
      * @returns { string }
      */
     toJson(): string {
-        return this.toISOString();
+        return this.toIsoString();
     }
 
     /**
