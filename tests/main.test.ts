@@ -8,14 +8,14 @@ describe('Carbon.now()', (): void => {
 
     test('returns current date correctly', (): void => {
         const carbon: string = Carbon.now('UTC').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-Us', { timeZone: 'UTC', hour12: false });
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
 
         expect(carbon).toBe(date);
     });
 
     test('changes timezone correctly', (): void => {
         const carbon: string = Carbon.now('CET').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-Us', { timeZone: 'CET', hour12: false });
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'CET', hour12: false });
 
         expect(carbon).toBe(date);
     });
@@ -28,14 +28,14 @@ describe('Carbon.parse()', (): void => {
 
     test('returns current date correctly', (): void => {
         const carbon: string = Carbon.parse(null, 'UTC').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-Us', { timeZone: 'UTC', hour12: false });
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
 
         expect(carbon).toBe(date);
     });
 
     test('changes timezone correctly', (): void => {
         const carbon: string = Carbon.parse(null, 'CET').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-Us', { timeZone: 'CET', hour12: false });
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'CET', hour12: false });
 
         expect(carbon).toBe(date);
     });
@@ -220,6 +220,121 @@ describe('Carbon.format()', (): void => {
     });
 });
 
+describe('Carbon.isLocal()', (): void => {
+    test('returns true when the instance is in the local timezone', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(0);
+
+        expect(Carbon.now('Europe/London').isLocal()).toBeTruthy();
+
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+    });
+
+    test('returns false when the instance is not in the local timezone', (): void => {
+        expect(Carbon.now('America/Toronto').isLocal()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isUtc()', (): void => {
+    test('returns true when the instance is in the UTC timezone', (): void => {
+        expect(Carbon.now('Europe/London').isUtc()).toBeTruthy();
+    });
+
+    test('returns false when the instance is in the UTC timezone', (): void => {
+        expect(Carbon.now('America/Toronto').isUtc()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isValid()', (): void => {
+    test('returns true when the instance is valid', (): void => {
+        expect(Carbon.now().isValid()).toBeTruthy();
+    })
+
+    test('returns false when the instance is not valid', (): void => {
+        expect(Carbon.parse('This is not a valid date').isValid()).toBeFalsy();
+        expect(Carbon.parse('0000-01-01').isValid()).toBeFalsy();
+    })
+});
+
+describe('Carbon.isDst()', (): void => {
+    test('returns true when the instance is in daylight saving time', (): void => {
+        expect(Carbon.parse('Oct 25, 2024', 'UTC').isDst()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not in daylight saving time', (): void => {
+        expect(Carbon.parse('Oct 28, 2024', 'UTC').isDst()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isMonday()', (): void => {
+    test('returns true when the instance\'s day is Monday', (): void => {
+        expect(Carbon.parse('2024-03-04', 'UTC').isMonday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Monday', (): void => {
+        expect(Carbon.parse('2024-03-05', 'UTC').isMonday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isTuesday()', (): void => {
+    test('returns true when the instance\'s day is Tuesday', (): void => {
+        expect(Carbon.parse('2024-03-05', 'UTC').isTuesday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Tuesday', (): void => {
+        expect(Carbon.parse('2024-03-04', 'UTC').isTuesday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isWednesday()', (): void => {
+    test('returns true when the instance\'s day is Wednesday', (): void => {
+        expect(Carbon.parse('2024-03-06', 'UTC').isWednesday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Wednesday', (): void => {
+        expect(Carbon.parse('2024-03-05', 'UTC').isWednesday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isThursday()', (): void => {
+    test('returns true when the instance\'s day is Thursday', (): void => {
+        expect(Carbon.parse('2024-03-07', 'UTC').isThursday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Thursday', (): void => {
+        expect(Carbon.parse('2024-03-06', 'UTC').isThursday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isFriday()', (): void => {
+    test('returns true when the instance\'s day is Friday', (): void => {
+        expect(Carbon.parse('2024-03-08', 'UTC').isFriday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Friday', (): void => {
+        expect(Carbon.parse('2024-03-07', 'UTC').isFriday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSaturday()', (): void => {
+    test('returns true when the instance\'s day is Saturday', (): void => {
+        expect(Carbon.parse('2024-03-09', 'UTC').isSaturday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Saturday', (): void => {
+        expect(Carbon.parse('2024-03-08', 'UTC').isSaturday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSunday()', (): void => {
+    test('returns true when the instance\'s day is Sunday', (): void => {
+        expect(Carbon.parse('2024-03-10', 'UTC').isSunday()).toBeTruthy();
+    });
+
+    test('returns false when the instance\'s day is not Sunday', (): void => {
+        expect(Carbon.parse('2024-03-09', 'UTC').isSunday()).toBeFalsy();
+    });
+});
+
 describe('Carbon.toDateString()', (): void => {
     test('formats the instance as date correctly', (): void => {
         expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toDateString()).toBe('2024-03-01');
@@ -310,13 +425,13 @@ describe('Carbon.toCookieString()', (): void => {
     });
 });
 
-describe('Carbon.toISOString()', (): void => {
+describe('Carbon.toIsoString()', (): void => {
     test('formats the instance as ISO8601 correctly without keeping offset', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString()).toBe('2024-03-01T11:45:00.000Z');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toIsoString()).toBe('2024-03-01T11:45:00.000Z');
     });
 
     test('formats the instance as ISO8601 correctly and keeps the offset', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toISOString(true)).toBe('2024-03-01T12:45:00.000+01:00');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toIsoString(true)).toBe('2024-03-01T12:45:00.000+01:00');
     });
 });
 
