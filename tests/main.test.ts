@@ -247,12 +247,12 @@ describe('Carbon.isUtc()', (): void => {
 describe('Carbon.isValid()', (): void => {
     test('returns true when the instance is valid', (): void => {
         expect(Carbon.now().isValid()).toBeTruthy();
-    })
+    });
 
     test('returns false when the instance is not valid', (): void => {
         expect(Carbon.parse('This is not a valid date').isValid()).toBeFalsy();
         expect(Carbon.parse('0000-01-01').isValid()).toBeFalsy();
-    })
+    });
 });
 
 describe('Carbon.isDst()', (): void => {
@@ -332,6 +332,118 @@ describe('Carbon.isSunday()', (): void => {
 
     test('returns false when the instance\'s day is not Sunday', (): void => {
         expect(Carbon.parse('2024-03-09', 'UTC').isSunday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameYear()', (): void => {
+    test('returns true when the dates are in the same year', (): void => {
+        expect(Carbon.parse('2024-01-01', 'UTC').isSameYear(Carbon.parse('2024-12-31', 'UTC'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same year', (): void => {
+        expect(Carbon.parse('2024-01-01', 'UTC').isSameYear(Carbon.parse('2025-01-01', 'UTC'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same year', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+
+        expect(Carbon.parse('2024-05-01', 'UTC').isSameYear()).toBeTruthy();
+
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+    });
+
+    test('returns false when comparing to now but they are not in the same year', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+
+        expect(Carbon.parse('2023-05-01', 'UTC').isSameYear()).toBeFalsy();
+
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+    });
+});
+
+describe('Carbon.isCurrentYear()', (): void => {
+    test('returns true if the instance is in the current year', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+
+        expect(Carbon.parse('2024-06-15', 'UTC').isCurrentYear()).toBeTruthy();
+
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+    });
+
+    test('returns false if the instance is not in the current year', (): void => {
+        expect(Carbon.parse('2023-06-15', 'UTC').isCurrentYear()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextYear()', (): void => {
+    test('returns true if the instance is in the next year', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+
+        expect(Carbon.parse('2025-01-01', 'UTC').isNextYear()).toBeTruthy();
+
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+    });
+
+    test('returns false if the instance is not in the next year', (): void => {
+        expect(Carbon.parse('2024-01-01', 'UTC').isNextYear()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastYear()', (): void => {
+    test('returns true if the instance is in the last year', (): void => {
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+
+        expect(Carbon.parse('2023-12-31', 'UTC').isLastYear()).toBeTruthy();
+        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+
+    });
+
+    test('returns false if the instance is not in the last year', (): void => {
+        expect(Carbon.parse('2024-12-31', 'UTC').isLastYear()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameAs()', (): void => {
+    test('returns true when the formatted dates match', (): void => {
+        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'UTC');
+        const date: string = '2024-03-10 15:00:00';
+
+        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeTruthy();
+    });
+
+    test('returns false when the formatted dates do not match', (): void => {
+        const carbon = Carbon.parse('2024-03-10 15:00:00', 'UTC');
+        const date   = Carbon.parse('2024-03-10 16:00:00', 'UTC');
+
+        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
+    });
+
+    test('returns true when comparing only the year part and it matches', (): void => {
+        const carbon = Carbon.parse('2024-03-10', 'UTC');
+        const date   = Carbon.parse('2024-12-25', 'UTC');
+
+        expect(carbon.isSameAs('YYYY', date)).toBeTruthy();
+    });
+
+    test('returns true when comparing with a native Date object and the dates match', (): void => {
+        const carbon     = Carbon.parse('2024-03-10', 'UTC');
+        const date: Date = new Date('2024-03-10T00:00:00Z');
+
+        expect(carbon.isSameAs('YYYY-MM-DD', date)).toBeTruthy();
+    });
+
+    test('returns false when comparing with a different format and the dates would otherwise match', (): void => {
+        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'UTC');
+        const date: string = '2024-03-10';
+
+        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
+        expect(carbon.isSameAs('YYYY-MM-DD', date)).toBeTruthy();
+    });
+
+    test('returns true when the second date is null and the format matches the current date', (): void => {
+        const today = new Carbon();
+
+        expect(today.isSameAs('YYYY-MM-DD')).toBeTruthy();
     });
 });
 
