@@ -1,11 +1,11 @@
 enum DayOfTheWeek {
-    Monday = 1,
-    Tuesday = 2,
+    Monday    = 1,
+    Tuesday   = 2,
     Wednesday = 3,
-    Thursday = 4,
-    Friday = 5,
-    Saturday = 6,
-    Sunday = 7,
+    Thursday  = 4,
+    Friday    = 5,
+    Saturday  = 6,
+    Sunday    = 7,
 }
 
 class Str {
@@ -84,7 +84,7 @@ class Carbon {
      *
      * @type { string | null }
      */
-    #timezone: string | null;
+    #timezone: Timezone | null;
 
     /**
      * Standard to represent date and time information in XML feeds.
@@ -213,7 +213,7 @@ class Carbon {
      * @param { string | null } timezone
      */
     constructor(date: string | null = null, timezone: Timezone | null = null) {
-        this.#date = date === null || date === 'now' ? new Date() : new Date(date);
+        this.#date     = date === null || date === 'now' ? new Date() : new Date(date);
         this.#timezone = timezone;
 
         this.date = this.format('Y-m-d H:i:s.v T (P)');
@@ -251,13 +251,13 @@ class Carbon {
      */
     format(format: string): string {
         const options: object = {
-            year: 'numeric',
-            month: 'numeric',
-            day: 'numeric',
-            hour: 'numeric',
-            minute: 'numeric',
-            second: 'numeric',
-            hour12: undefined,
+            year    : 'numeric',
+            month   : 'numeric',
+            day     : 'numeric',
+            hour    : 'numeric',
+            minute  : 'numeric',
+            second  : 'numeric',
+            hour12  : undefined,
             timeZone: this.#timezone ?? undefined,
         };
 
@@ -265,19 +265,19 @@ class Carbon {
             return 'Invalid Date';
         }
 
-        let date: string = '';
-        let days: string[] = [];
+        let date: string     = '';
+        let days: string[]   = [];
         let months: string[] = [];
 
         const now: Date = new Date(this.#date.toLocaleString('en-US', options));
 
-        const month: number = now.getMonth();
-        const dayOfTheWeek: number = now.getDay();
+        const month: number         = now.getMonth();
+        const dayOfTheWeek: number  = now.getDay();
         const dayOfTheMonth: number = now.getDate();
-        const year: number = now.getFullYear();
-        const hours: number = now.getHours();
-        const minutes: number = now.getMinutes();
-        const seconds: number = now.getSeconds();
+        const year: number          = now.getFullYear();
+        const hours: number         = now.getHours();
+        const minutes: number       = now.getMinutes();
+        const seconds: number       = now.getSeconds();
 
         const elements: RegExpMatchArray | null = format.match(/\\?.|./g);
 
@@ -330,9 +330,9 @@ class Carbon {
 
                 // Numeric representation of the day of the week (e.g., The day of the year (starting from 0))
                 case 'z': {
-                    let start: Date = new Date(year, 0, 0);
-                    let diff: number = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-                    let day: number = 1000 * 60 * 60 * 24;
+                    let start: Date          = new Date(year, 0, 0);
+                    let diff: number         = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
+                    let day: number          = 1000 * 60 * 60 * 24;
                     const currentDay: number = Math.floor(diff / day);
                     date += currentDay - 1;
 
@@ -341,9 +341,9 @@ class Carbon {
                 // ISO 8601 week number of year, weeks starting on Monday (e.g., 42 (the 42nd week in the year))
                 case 'W': {
                     let parsedDate: Date = new Date(Date.UTC(year, month, dayOfTheMonth));
-                    let weekDay: number = parsedDate.getUTCDay() || 7;
+                    let weekDay: number  = parsedDate.getUTCDay() || 7;
                     parsedDate.setUTCDate(parsedDate.getUTCDate() + 4 - weekDay);
-                    let yearStart: Date = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
+                    let yearStart: Date    = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
                     let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / 86400000) + 1) / 7);
 
                     date += Str.padLeft((weekNumber as unknown as string), 1, '0');
@@ -359,7 +359,7 @@ class Carbon {
 
                 // Numeric representation of a month, with leading zeros (e.g., 01 through 12)
                 case 'm': {
-                    const currentMonth = month + 1;
+                    const currentMonth: number = month + 1;
                     date += Str.padLeft(currentMonth.toString(), 2, '0');
 
                     break;
@@ -438,11 +438,11 @@ class Carbon {
 
                 // Swatch Internet time (e.g., 000 through 999)
                 case 'B': {
-                    const utcHours = now.getUTCHours();
-                    const utcMinutes = now.getUTCMinutes();
-                    const utcSeconds = now.getUTCSeconds();
+                    const hours: number   = now.getUTCHours();
+                    const minutes: number = now.getUTCMinutes();
+                    const seconds: number = now.getUTCSeconds();
 
-                    date += Math.floor((((utcHours + 1) % 24) + utcMinutes / 60 + utcSeconds / 3600) * 1000 / 24);
+                    date += Math.floor((((hours + 1) % 24) + minutes / 60 + seconds / 3600) * 1000 / 24);
 
                     break;
                 }
@@ -503,7 +503,7 @@ class Carbon {
                 // Whether the date is in daylight saving time (e.g., 1 if Daylight Saving Time, 0 otherwise)
                 case 'I': {
                     let january: number = new Date(year, 0, 1).getTimezoneOffset();
-                    let july: number = new Date(year, 6, 1).getTimezoneOffset();
+                    let july: number    = new Date(year, 6, 1).getTimezoneOffset();
 
                     date += Math.max(january, july) !== now.getTimezoneOffset() ? '1' : '0';
 
@@ -600,7 +600,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's date and time are in the local timezone.
+     * Determine if the instance's date and time are in the local timezone.
      *
      * @returns { boolean }
      */
@@ -609,7 +609,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's date and time are in the UTC timezone.
+     * Determine if the instance's date and time are in the UTC timezone.
      *
      * @returns { boolean }
      */
@@ -618,7 +618,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's date and time is valid.
+     * Determine if the instance's date and time is valid.
      *
      * @returns { boolean }
      */
@@ -627,7 +627,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's date and time in a daylight saving time.
+     * Determine if the instance's date and time in a daylight saving time.
      *
      * @returns { boolean }
      */
@@ -636,7 +636,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Monday.
+     * Determine if the instance's day is Monday.
      *
      * @returns { boolean }
      */
@@ -645,7 +645,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Tuesday.
+     * Determine if the instance's day is Tuesday.
      *
      * @returns { boolean }
      */
@@ -654,7 +654,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Wednesday.
+     * Determine if the instance's day is Wednesday.
      *
      * @returns { boolean }
      */
@@ -663,7 +663,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Thursday.
+     * Determine if the instance's day is Thursday.
      *
      * @returns { boolean }
      */
@@ -672,7 +672,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Friday.
+     * Determine if the instance's day is Friday.
      *
      * @returns { boolean }
      */
@@ -681,7 +681,7 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Saturday.
+     * Determine if the instance's day is Saturday.
      *
      * @returns { boolean }
      */
@@ -690,12 +690,83 @@ class Carbon {
     }
 
     /**
-     * Determines if the instance's day is Sunday.
+     * Determine if the instance's day is Sunday.
      *
      * @returns { boolean }
      */
     isSunday(): boolean {
         return parseInt(this.format('N')) == DayOfTheWeek.Sunday;
+    }
+
+    /**
+     * Determine if the given date is in the same year as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameYear(date: Carbon | string | null = null): boolean {
+        return this.isSameAs('Y', date);
+    }
+
+    /**
+     * Determine if the instance is in the same year as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentYear(): boolean {
+        return this.isSameAs('Y', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same year as the current moment next year.
+     */
+    isNextYear(): boolean {
+        return parseInt(this.format('Y')) === parseInt(Carbon.now().format('Y')) + 1;
+    }
+
+    /**
+     * Determine if the instance is in the same year as the current moment last year.
+     */
+    isLastYear(): boolean {
+        return parseInt(this.format('Y')) === parseInt(Carbon.now().format('Y')) - 1;
+    }
+
+    /**
+     * Compares the formatted values of the two dates.
+     *
+     * @param { string } format
+     * @param { Carbon | Date | string | null } date
+     *
+     * @return bool
+     */
+    isSameAs(format: string, date: Carbon | Date | string | null = null): boolean {
+        return this.format(format) === this.#resolveCarbon(date).format(format);
+    }
+
+    /**
+     * Resolves the date to a Carbon instance.
+     *
+     * @private
+     *
+     * @param { Carbon | Date | string | null} date
+     *
+     * @return { Carbon }
+     */
+    #resolveCarbon(date: Carbon | Date | string | null = null): Carbon {
+        if (!date) {
+            date = Carbon.now(this.#timezone);
+        }
+
+        if (typeof date === 'string') {
+            date = Carbon.parse(date, this.#timezone);
+        }
+
+        if (date instanceof Date) {
+            date = Carbon.parse(date.toString(), this.#timezone);
+        }
+
+        return date;
     }
 
     /**
@@ -957,18 +1028,18 @@ class Carbon {
      */
     toObject(): DateRepresentation {
         return {
-            year: this.#date.getFullYear(),
-            month: this.#date.getMonth() + 1,
-            day: this.#date.getDate(),
+            year     : this.#date.getFullYear(),
+            month    : this.#date.getMonth() + 1,
+            day      : this.#date.getDate(),
             dayOfWeek: parseInt(this.format('N')),
             dayOfYear: parseInt(this.format('z')),
-            hour: this.#date.getHours(),
-            minute: this.#date.getMinutes(),
-            second: this.#date.getSeconds(),
-            micro: undefined,
+            hour     : this.#date.getHours(),
+            minute   : this.#date.getMinutes(),
+            second   : this.#date.getSeconds(),
+            micro    : undefined,
             timestamp: this.#date.valueOf(),
             formatted: this.format('Y-m-d H:i:s'),
-            timezone: this.format('T (P)'),
+            timezone : this.format('T (P)'),
         };
     }
 
