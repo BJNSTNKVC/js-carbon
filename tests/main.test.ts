@@ -1278,3 +1278,94 @@ describe('Carbon.toString()', (): void => {
         expect(carbon.toString()).toBe(carbon.date);
     });
 });
+
+describe('Carbon.get()', (): void => {
+    test('\'year\' returns the year', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('year')).toEqual(2024);
+    });
+
+    test('\'month\' returns the month', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('month')).toEqual(2);
+    });
+
+    test('\'week\' returns the week', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('week')).toEqual(9);
+    });
+
+    test('\'day\' returns the day', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('day')).toEqual(29);
+    });
+
+    test('\'hour\' returns the hour', (): void => {
+        expect(Carbon.parse('2024-02-29 12:30:45', 'CET').get('hour')).toEqual(12);
+    });
+
+    test('\'minute\' returns the minute', (): void => {
+        expect(Carbon.parse('2024-02-29 12:30:45', 'CET').get('minute')).toEqual(30);
+    });
+
+    test('\'second\' returns the second', (): void => {
+        expect(Carbon.parse('2024-02-29 12:30:45', 'CET').get('second')).toEqual(45);
+    });
+
+    test('\'millisecond\' returns the millisecond', (): void => {
+        expect(Carbon.parse('2024-02-29 12:30:45.123', 'CET').get('millisecond')).toEqual(123);
+    });
+
+    test('\'CET\' returns the microsecond', (): void => {
+        expect(() => Carbon.parse('2024-02-29 12:30:45.123456', 'CET').get('microsecond')).toThrow('Microseconds are not supported.');
+    });
+
+    test('\'timestamp\' returns the timestamp', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('timestamp')).toEqual(1709164800);
+    });
+
+    test('\'dayOfWeek\' returns the day of the week', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('dayOfWeek')).toEqual(4);
+    });
+
+    test('\'dayOfYear\' returns the day of the year', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('dayOfYear')).toEqual(59);
+    });
+
+    test('\'quarter\' returns the quarter', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('quarter')).toEqual(1);
+    });
+
+    test('\'decade\' returns the decade', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('decade')).toEqual(203);
+    });
+
+    test('\'century\' returns the century', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('century')).toEqual(21);
+    });
+
+    test('returns the millennium', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('millennium')).toEqual(3);
+    });
+
+    test('\'offset\' returns the offset in seconds', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('offset')).toEqual(3600);
+    });
+
+    test('returns whether it is in daylight saving time', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('dst')).toEqual(false);
+    });
+
+    test('returns whether it is local time', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('local')).toEqual(true);
+    });
+
+    test('returns whether it is UTC time', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('utc')).toEqual(false);
+    });
+
+    test('returns the timezone', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('timezone')).toEqual('CET (+01:00)');
+    });
+
+    test('throws an error for an unknown getter', (): void => {
+        expect(() => Carbon.parse('2024-02-29', 'CET').get('unknown')).toThrow('Unknown getter.');
+    });
+});
+
