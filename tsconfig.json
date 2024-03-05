@@ -20,7 +20,7 @@
         "noImplicitReturns"       : true,
         "noUncheckedIndexedAccess": true,
         "noUnusedLocals"          : true,
-        "noUnusedParameters"      : true,
+        "noUnusedParameters"      : false,
         "useDefineForClassFields" : true
     },
     "include"        : [

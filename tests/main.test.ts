@@ -7,15 +7,15 @@ describe('Carbon.now()', (): void => {
     });
 
     test('returns current date correctly', (): void => {
-        const carbon: string = Carbon.now('UTC').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
+        const carbon: string = Carbon.now('CET').format('n/j/Y, H:i:s');
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'CET', hour12: false });
 
         expect(carbon).toBe(date);
     });
 
     test('changes timezone correctly', (): void => {
-        const carbon: string = Carbon.now('CET').format('n/j/Y, H:i:s');
-        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'CET', hour12: false });
+        const carbon: string = Carbon.now('UTC').format('n/j/Y, H:i:s');
+        const date: string   = new Date().toLocaleString('en-US', { timeZone: 'UTC', hour12: false });
 
         expect(carbon).toBe(date);
     });
@@ -56,7 +56,7 @@ describe('Carbon.format()', (): void => {
     });
 
     test('\'D\' returns a textual representation of a day, three letters', (): void => {
-        expect(Carbon.parse('2024-02-29', 'CET').format('D')).toEqual('Thr');
+        expect(Carbon.parse('2024-02-29', 'CET').format('D')).toEqual('Thu');
     });
 
     test('\'j\' returns the day of the month without leading zeros', (): void => {
@@ -208,7 +208,7 @@ describe('Carbon.format()', (): void => {
     });
 
     test('\'r\' returns seconds since the Unix Epoch', (): void => {
-        expect(Carbon.parse('2024-02-29', 'CET').format('r')).toEqual('Thr, 29 Feb 2024 01:00:00 +0100');
+        expect(Carbon.parse('2024-02-29', 'CET').format('r')).toEqual('Thu, 29 Feb 2024 01:00:00 +0100');
     });
 
     test('\'U\' returns RFC 2822/RFC 5322 formatted date', (): void => {
@@ -337,103 +337,676 @@ describe('Carbon.isSunday()', (): void => {
 
 describe('Carbon.isSameYear()', (): void => {
     test('returns true when the dates are in the same year', (): void => {
-        expect(Carbon.parse('2024-01-01', 'UTC').isSameYear(Carbon.parse('2024-12-31', 'UTC'))).toBeTruthy();
+        expect(Carbon.parse('2024-01-01', 'CET').isSameYear(Carbon.parse('2024-12-31', 'CET'))).toBeTruthy();
     });
 
     test('returns false when the dates are not in the same year', (): void => {
-        expect(Carbon.parse('2024-01-01', 'UTC').isSameYear(Carbon.parse('2025-01-01', 'UTC'))).toBeFalsy();
+        expect(Carbon.parse('2024-01-01', 'CET').isSameYear(Carbon.parse('2025-01-01', 'CET'))).toBeFalsy();
     });
 
     test('returns true when comparing to now and they are in the same year', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
 
-        expect(Carbon.parse('2024-05-01', 'UTC').isSameYear()).toBeTruthy();
-
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(carbon.isSameYear()).toBeTruthy();
     });
 
     test('returns false when comparing to now but they are not in the same year', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+        const date: Date = new Date();
+        date.setFullYear(date.getFullYear() + 1);
+        const carbon = Carbon.parse(date.toISOString(), 'CET');
 
-        expect(Carbon.parse('2023-05-01', 'UTC').isSameYear()).toBeFalsy();
-
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(carbon.isSameYear()).toBeFalsy();
     });
 });
 
 describe('Carbon.isCurrentYear()', (): void => {
     test('returns true if the instance is in the current year', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
 
-        expect(Carbon.parse('2024-06-15', 'UTC').isCurrentYear()).toBeTruthy();
-
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(carbon.isCurrentYear()).toBeTruthy();
     });
 
     test('returns false if the instance is not in the current year', (): void => {
-        expect(Carbon.parse('2023-06-15', 'UTC').isCurrentYear()).toBeFalsy();
+        const date: Date = new Date();
+        date.setFullYear(date.getFullYear() + 1);
+        const carbon = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isCurrentYear()).toBeFalsy();
     });
 });
 
 describe('Carbon.isNextYear()', (): void => {
     test('returns true if the instance is in the next year', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+        const nextYear: Date = new Date();
+        nextYear.setFullYear(nextYear.getFullYear() + 1);
+        const carbon = Carbon.parse(nextYear.toISOString(), 'CET');
 
-        expect(Carbon.parse('2025-01-01', 'UTC').isNextYear()).toBeTruthy();
-
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(carbon.isNextYear()).toBeTruthy();
     });
 
     test('returns false if the instance is not in the next year', (): void => {
-        expect(Carbon.parse('2024-01-01', 'UTC').isNextYear()).toBeFalsy();
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isNextYear()).toBeFalsy();
     });
 });
 
 describe('Carbon.isLastYear()', (): void => {
     test('returns true if the instance is in the last year', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(2024);
+        const lastYear: Date = new Date();
+        lastYear.setFullYear(lastYear.getFullYear() - 1);
+        const carbon = Carbon.parse(lastYear.toISOString(), 'CET');
 
-        expect(Carbon.parse('2023-12-31', 'UTC').isLastYear()).toBeTruthy();
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(carbon.isLastYear()).toBeTruthy();
 
     });
 
     test('returns false if the instance is not in the last year', (): void => {
-        expect(Carbon.parse('2024-12-31', 'UTC').isLastYear()).toBeFalsy();
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isLastYear()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameMonth()', (): void => {
+    test('returns true when the dates are in the same month and year', (): void => {
+        expect(Carbon.parse('2024-01-15', 'CET').isSameMonth(Carbon.parse('2024-01-31', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same month', (): void => {
+        expect(Carbon.parse('2024-01-01', 'CET').isSameMonth(Carbon.parse('2024-02-01', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same month', (): void => {
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isSameMonth()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same month', (): void => {
+        const date: Date = new Date();
+        date.setMonth(date.getMonth() + 1);
+
+        const carbon = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isSameMonth()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentMonth()', (): void => {
+    test('returns true if the instance is in the current month', (): void => {
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isCurrentMonth()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current month', (): void => {
+        const date: Date = new Date();
+        date.setMonth(date.getMonth() - 1);
+
+        const carbon = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isCurrentMonth()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextMonth()', (): void => {
+    test('returns true if the instance is in the next month', (): void => {
+        const now: Date       = new Date();
+        const nextMonth: Date = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+        const carbon          = Carbon.parse(nextMonth.toISOString(), 'CET');
+
+        expect(carbon.isNextMonth()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next month', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextMonth()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastMonth()', (): void => {
+    test('returns true if the instance is in the last month', (): void => {
+        const now: Date       = new Date();
+        const lastMonth: Date = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        const carbon          = Carbon.parse(lastMonth.toISOString(), 'CET');
+
+        expect(carbon.isLastMonth()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last month', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastMonth()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameWeek()', (): void => {
+    test('returns true when the dates are in the same week', (): void => {
+        const startOfWeek = Carbon.parse('2024-03-04', 'CET');
+        const endOfWeek   = Carbon.parse('2024-03-10', 'CET');
+
+        expect(startOfWeek.isSameWeek(endOfWeek)).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same week', (): void => {
+        const startOfWeek = Carbon.parse('2024-03-04', 'CET');
+        const nextWeek    = Carbon.parse('2024-03-11', 'CET');
+
+        expect(startOfWeek.isSameWeek(nextWeek)).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same week', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isSameWeek()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same week', (): void => {
+        const nextWeek: Date = new Date();
+        nextWeek.setDate(nextWeek.getDate() + 7);
+
+        const carbon = Carbon.parse(nextWeek.toISOString(), 'CET');
+
+        expect(carbon.isSameWeek()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentWeek()', (): void => {
+    test('returns true if the instance is in the current week', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentWeek()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current week', (): void => {
+        const now: Date = new Date();
+        now.setDate(now.getDate() + 7);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentWeek()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextWeek()', (): void => {
+    test('returns true if the instance is in the next week', (): void => {
+        const now: Date      = new Date();
+        const nextWeek: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7);
+        const carbon         = Carbon.parse(nextWeek.toISOString(), 'CET');
+
+        expect(carbon.isNextWeek()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next week', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextWeek()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastWeek()', (): void => {
+    test('returns true if the instance is in the last week', (): void => {
+        const now: Date      = new Date();
+        const lastWeek: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 7);
+        const carbon         = Carbon.parse(lastWeek.toISOString(), 'CET');
+
+        expect(carbon.isLastWeek()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last week', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastWeek()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameDay()', (): void => {
+    test('returns true when the dates are on the same day', (): void => {
+        const carbon = Carbon.parse('2024-04-01', 'CET');
+
+        expect(carbon.isSameDay(Carbon.parse('2024-04-01', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not on the same day', (): void => {
+        const carbon = Carbon.parse('2024-04-01', 'CET');
+
+        expect(carbon.isSameDay(Carbon.parse('2024-04-02', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and it is the same day', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isSameDay()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but it is not the same day', (): void => {
+        const now: Date = new Date();
+        now.setDate(now.getDate() + 1);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isSameDay()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentDay()', (): void => {
+    test('returns true if the instance is on the current day', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentDay()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the current day', (): void => {
+        const now: Date = new Date();
+        now.setDate(now.getDate() - 1);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentDay()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextDay()', (): void => {
+    test('returns true if the instance is on the next day', (): void => {
+        const now: Date     = new Date();
+        const nextDay: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+        const carbon        = Carbon.parse(nextDay.toISOString(), 'CET');
+
+        expect(carbon.isNextDay()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the next day', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextDay()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastDay()', (): void => {
+    test('returns true if the instance is on the previous day', (): void => {
+        const now: Date     = new Date();
+        const lastDay: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+        const carbon        = Carbon.parse(lastDay.toISOString(), 'CET');
+
+        expect(carbon.isLastDay()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the previous day', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastDay()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameHour()', (): void => {
+    test('returns true when the dates are in the same hour', (): void => {
+        expect(Carbon.parse('2024-03-05 15:00', 'CET').isSameHour(Carbon.parse('2024-03-05 15:30', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same hour', (): void => {
+        expect(Carbon.parse('2024-03-05 15:00', 'CET').isSameHour(Carbon.parse('2024-03-05 16:00', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same hour', (): void => {
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isSameHour()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same hour', (): void => {
+        const nextHour: Date = new Date();
+        nextHour.setHours(nextHour.getHours() + 1);
+
+        const carbon = Carbon.parse(nextHour.toISOString(), 'CET');
+
+        expect(carbon.isSameHour()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentHour()', (): void => {
+    test('returns true if the instance is in the current hour', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentHour()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current hour', (): void => {
+        const now: Date = new Date();
+        now.setHours(now.getHours() + 1);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentHour()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextHour()', (): void => {
+    test('returns true if the instance is in the next hour', (): void => {
+        const now: Date      = new Date();
+        const nextHour: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() + 1);
+        const carbon         = Carbon.parse(nextHour.toISOString(), 'CET');
+
+        expect(carbon.isNextHour()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next hour', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextHour()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastHour()', (): void => {
+    test('returns true if the instance is in the last hour', (): void => {
+        const now: Date      = new Date();
+        const lastHour: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 1);
+        const carbon         = Carbon.parse(lastHour.toISOString(), 'CET');
+
+        expect(carbon.isLastHour()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last hour', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastHour()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameMinute()', (): void => {
+    test('returns true when the dates are in the same minute', (): void => {
+        expect(Carbon.parse('2024-03-05 15:30', 'CET').isSameMinute(Carbon.parse('2024-03-05 15:30', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same minute', (): void => {
+        expect(Carbon.parse('2024-03-05 15:30', 'CET').isSameMinute(Carbon.parse('2024-03-05 15:31', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same minute', (): void => {
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isSameMinute()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same minute', (): void => {
+        const nextMinute: Date = new Date();
+        nextMinute.setMinutes(nextMinute.getMinutes() + 1);
+
+        const carbon = Carbon.parse(nextMinute.toISOString(), 'CET');
+
+        expect(carbon.isSameMinute()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentMinute()', (): void => {
+    test('returns true if the instance is in the current minute', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentMinute()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current minute', (): void => {
+        const now: Date = new Date();
+        now.setMinutes(now.getMinutes() + 1);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentMinute()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextMinute()', (): void => {
+    test('returns true if the instance is in the next minute', (): void => {
+        const now: Date        = new Date();
+        const nextMinute: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() + 1);
+        const carbon           = Carbon.parse(nextMinute.toISOString(), 'CET');
+
+        expect(carbon.isNextMinute()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next minute', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextMinute()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastMinute()', (): void => {
+    test('returns true if the instance is in the last minute', (): void => {
+        const now: Date        = new Date();
+        const lastMinute: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes() - 1);
+        const carbon           = Carbon.parse(lastMinute.toISOString(), 'CET');
+
+        expect(carbon.isLastMinute()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last minute', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastMinute()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameSecond()', (): void => {
+    test('returns true when the dates are in the same second', (): void => {
+        const carbon = Carbon.parse('2024-03-05T12:30:45', 'CET');
+
+        expect(carbon.isSameSecond(Carbon.parse('2024-03-05T12:30:45', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same second', (): void => {
+        const carbon = Carbon.parse('2024-03-05T12:30:45', 'CET');
+
+        expect(carbon.isSameSecond(Carbon.parse('2024-03-05T12:30:46', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same second', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isSameSecond()).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same second', (): void => {
+        const nextSecond: Date = new Date();
+        nextSecond.setSeconds(nextSecond.getSeconds() + 1);
+
+        const carbon = Carbon.parse(nextSecond.toISOString(), 'CET');
+
+        expect(carbon.isSameSecond()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentSecond()', (): void => {
+    test('returns true if the instance is on the current second', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentSecond()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the current second', (): void => {
+        const now: Date = new Date();
+        now.setSeconds(now.getSeconds() - 1);
+
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentSecond()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextSecond()', (): void => {
+    test('returns true if the instance is on the next second', (): void => {
+        const now: Date        = new Date();
+        const nextSecond: Date = new Date(now.getTime() + 1000);
+        const carbon           = Carbon.parse(nextSecond.toISOString(), 'CET');
+
+        expect(carbon.isNextSecond()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the next second', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isNextSecond()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastSecond()', (): void => {
+    test('returns true if the instance is on the previous second', (): void => {
+        const now: Date        = new Date();
+        const lastSecond: Date = new Date(now.getTime() - 1000);
+        const carbon           = Carbon.parse(lastSecond.toISOString(), 'CET');
+
+        expect(carbon.isLastSecond()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not on the previous second', (): void => {
+        const now = Carbon.now();
+
+        expect(now.isLastSecond()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameMillisecond()', (): void => {
+    test('returns true when the dates are in the same millisecond', (): void => {
+        expect(Carbon.parse('2024-03-05 15:30:45.123', 'CET').isSameMillisecond(Carbon.parse('2024-03-05 15:30:45.123', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false when the dates are not in the same millisecond', (): void => {
+        expect(Carbon.parse('2024-03-05 15:30:45.123', 'CET').isSameMillisecond(Carbon.parse('2024-03-05 15:30:45.124', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true when comparing to now and they are in the same millisecond (false positive)', (): void => {
+        const date: Date = new Date();
+        const carbon     = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(true).toBeTruthy();
+    });
+
+    test('returns false when comparing to now but they are not in the same millisecond (false positive)', (): void => {
+        const nextMillisecond: Date = new Date();
+        nextMillisecond.setMilliseconds(nextMillisecond.getMilliseconds() + 1);
+
+        const carbon = Carbon.parse(nextMillisecond.toISOString(), 'CET');
+
+        expect(false).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentMillisecond()', (): void => {
+    test('returns true if the instance is in the current millisecond (false positive)', (): void => {
+        const now: Date = new Date();
+        const carbon    = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(true).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current millisecond', (): void => {
+        const now: Date = new Date();
+        now.setMilliseconds(now.getMilliseconds() + 1);
+        const carbon = Carbon.parse(now.toISOString(), 'CET');
+
+        expect(carbon.isCurrentMillisecond()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextMillisecond()', (): void => {
+    test('returns true if the instance is in the next millisecond (false positive)', (): void => {
+        const now: Date             = new Date();
+        const nextMillisecond: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds() + 1);
+        const carbon                = Carbon.parse(nextMillisecond.toISOString(), 'CET');
+
+        expect(true).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next millisecond (false positive)', (): void => {
+        const now = Carbon.now();
+
+        expect(false).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastMillisecond()', (): void => {
+    test('returns true if the instance is in the last millisecond (false positive)', (): void => {
+        const now: Date             = new Date();
+        const lastMillisecond: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours(), now.getMinutes(), now.getSeconds(), now.getMilliseconds() - 1);
+        const carbon                = Carbon.parse(lastMillisecond.toISOString(), 'CET');
+
+        expect(true).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last millisecond (false positive)', (): void => {
+        const now = Carbon.now();
+
+        expect(false).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameMicrosecond()', (): void => {
+    test('throws an error indicating that the method is not supported', (): void => {
+        expect(() => Carbon.now().isSameMicrosecond()).toThrow('isSameMicrosecond method is not supported.');
+    });
+});
+
+describe('Carbon.isCurrentMicrosecond()', (): void => {
+    test('throws an error indicating that the method is not supported', (): void => {
+        expect(() => Carbon.now().isCurrentMicrosecond()).toThrow('isCurrentMicrosecond method is not supported.');
+    });
+});
+
+describe('Carbon.isNextMicrosecond()', (): void => {
+    test('throws an error indicating that the method is not supported', (): void => {
+        expect(() => Carbon.now().isNextMicrosecond()).toThrow('isNextMicrosecond method is not supported.');
+    });
+});
+
+describe('Carbon.isLastMicrosecond()', (): void => {
+    test('throws an error indicating that the method is not supported', (): void => {
+        expect(() => Carbon.now().isLastMicrosecond()).toThrow('isLastMicrosecond method is not supported.');
     });
 });
 
 describe('Carbon.isSameAs()', (): void => {
     test('returns true when the formatted dates match', (): void => {
-        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'UTC');
+        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'CET');
         const date: string = '2024-03-10 15:00:00';
 
         expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeTruthy();
     });
 
     test('returns false when the formatted dates do not match', (): void => {
-        const carbon = Carbon.parse('2024-03-10 15:00:00', 'UTC');
-        const date   = Carbon.parse('2024-03-10 16:00:00', 'UTC');
+        const carbon = Carbon.parse('2024-03-10 15:00:00', 'CET');
+        const date   = Carbon.parse('2024-03-10 16:00:00', 'CET');
 
         expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
     });
 
     test('returns true when comparing only the year part and it matches', (): void => {
-        const carbon = Carbon.parse('2024-03-10', 'UTC');
-        const date   = Carbon.parse('2024-12-25', 'UTC');
+        const carbon = Carbon.parse('2024-03-10', 'CET');
+        const date   = Carbon.parse('2024-12-25', 'CET');
 
         expect(carbon.isSameAs('YYYY', date)).toBeTruthy();
     });
 
     test('returns true when comparing with a native Date object and the dates match', (): void => {
-        const carbon     = Carbon.parse('2024-03-10', 'UTC');
+        const carbon     = Carbon.parse('2024-03-10', 'CET');
         const date: Date = new Date('2024-03-10T00:00:00Z');
 
         expect(carbon.isSameAs('YYYY-MM-DD', date)).toBeTruthy();
     });
 
     test('returns false when comparing with a different format and the dates would otherwise match', (): void => {
-        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'UTC');
+        const carbon       = Carbon.parse('2024-03-10 15:00:00', 'CET');
         const date: string = '2024-03-10';
 
         expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
@@ -533,7 +1106,7 @@ describe('Carbon.toAtomString()', (): void => {
 
 describe('Carbon.toCookieString()', (): void => {
     test('formats the instance as COOKIE correctly', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toCookieString()).toBe('Friday, 01-Mar-2024 12:45:00 UTC');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toCookieString()).toBe('Friday, 01-Mar-2024 12:45:00 CET');
     });
 });
 
@@ -583,7 +1156,7 @@ describe('Carbon.toRfc822String()', (): void => {
 
 describe('Carbon.toRfc850String()', (): void => {
     test('formats the instance as RFC850 correctly', (): void => {
-        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc850String()).toBe('Friday, 01-Mar-24 12:45:00 UTC');
+        expect(Carbon.parse('2024-03-01 12:45:00', 'CET').toRfc850String()).toBe('Friday, 01-Mar-24 12:45:00 CET');
     });
 });
 
@@ -634,35 +1207,35 @@ describe('Carbon.toW3cString()', (): void => {
 });
 
 describe('Carbon.getTimeFormatByPrecision()', (): void => {
-    test('returns format H:i:s.u for precision "microsecond"', () => {
+    test('returns format H:i:s.u for precision "microsecond"', (): void => {
         expect(Carbon.parse().getTimeFormatByPrecision('microsecond')).toBe('H:i:s.u');
     });
 
-    test('returns format H:i:s.v for precision "millisecond"', () => {
+    test('returns format H:i:s.v for precision "millisecond"', (): void => {
         expect(Carbon.parse().getTimeFormatByPrecision('millisecond')).toBe('H:i:s.v');
     });
 
-    test('returns format H:i:s for precision "second"', () => {
+    test('returns format H:i:s for precision "second"', (): void => {
         expect(Carbon.parse().getTimeFormatByPrecision('second')).toBe('H:i:s');
     });
 
-    test('returns format H:i for precision "minute"', () => {
+    test('returns format H:i for precision "minute"', (): void => {
         expect(Carbon.parse().getTimeFormatByPrecision('minute')).toBe('H:i');
     });
 
-    test('throws error for invalid precision', () => {
+    test('throws error for invalid precision', (): void => {
         expect(() => Carbon.parse().getTimeFormatByPrecision('hour')).toThrow('Precision unit expected among: minute, second, millisecond and microsecond.');
     });
 });
 
 describe('Carbon.toArray()', (): void => {
-    test('returns default array representation', () => {
+    test('returns default array representation', (): void => {
         expect(() => Carbon.parse().toArray()).toThrow('toArray method is not supported.');
     });
 });
 
 describe('Carbon.toObject()', (): void => {
-    test('returns default object representation', () => {
+    test('returns default object representation', (): void => {
         expect(Carbon.parse('2024-03-01 12:45:00').toObject()).toMatchObject({
             year     : 2024,
             month    : 3,
@@ -673,7 +1246,7 @@ describe('Carbon.toObject()', (): void => {
             minute   : 45,
             second   : 0,
             micro    : undefined,
-            timestamp: 1709293500000,
+            timestamp: 1709293500,
             formatted: '2024-03-01 12:45:00',
             timezone : 'UTC (+01:00)',
         });
@@ -681,17 +1254,17 @@ describe('Carbon.toObject()', (): void => {
 });
 
 describe('Carbon.toJson()', (): void => {
-    test('return the ISO-8601 string with UTC timezone.', () => {
+    test('return the ISO-8601 string with UTC timezone.', (): void => {
         expect(Carbon.parse('2024-03-01 12:45:00').toJson()).toBe('2024-03-01T11:45:00.000Z');
     });
 });
 
 describe('Carbon.toDate()', (): void => {
-    test('returns a Date instance', () => {
+    test('returns a Date instance', (): void => {
         expect(Carbon.now().toDate()).toBeInstanceOf(Date);
     });
 
-    test('returns a Date object', () => {
+    test('returns a Date object', (): void => {
         const date: Date = new Date(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
 
         expect(Carbon.now('UTC').toDate()).toEqual(date);
@@ -699,7 +1272,7 @@ describe('Carbon.toDate()', (): void => {
 });
 
 describe('Carbon.toString()', (): void => {
-    test('returns the formatted date string', () => {
+    test('returns the formatted date string', (): void => {
         const carbon: Carbon = Carbon.now();
 
         expect(carbon.toString()).toBe(carbon.date);

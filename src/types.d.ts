@@ -16,3 +16,5 @@ type DateRepresentation = {
     formatted: string
     timezone: string
 }
+
+type CarbonGetters = 'year' | 'month' | 'week' | 'day' | 'hour' | 'minute' | 'second' | 'millisecond' | 'microsecond' | 'timestamp' | 'dayOfWeek' | 'dayOfYear' | 'quarter' | 'decade' | 'century' | 'millennium' | 'offset' | 'dst' | 'local' | 'utc' | 'timezone';

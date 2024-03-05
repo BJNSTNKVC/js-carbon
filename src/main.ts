@@ -1,70 +1,32 @@
 enum DayOfTheWeek {
+    Sunday    = 0,
     Monday    = 1,
     Tuesday   = 2,
     Wednesday = 3,
     Thursday  = 4,
     Friday    = 5,
     Saturday  = 6,
-    Sunday    = 7,
 }
 
-class Str {
-    /**
-     * Pad the left side of a string with another.
-     *
-     * @param { string } value
-     * @param { number } length
-     * @param { string } pad
-     *
-     * @return { string }
-     */
-    static padLeft(value: string, length: number, pad: string = ' '): string {
-        const short: number = Math.max(0, length - (value.length ?? 0));
-
-        return pad.repeat(short).substring(0, short) + value;
-    }
-
-    /**
-     * Pad the right side of a string with another.
-     *
-     * @param { string } value
-     * @param { number } length
-     * @param { string } pad
-     *
-     * @return { string }
-     */
-    static padRight(value: string, length: number, pad: string = ' '): string {
-        const short: number = Math.max(0, length - value.length);
-
-        return value + pad.repeat(short).substring(0, short);
-    }
-
-    /**
-     * Replace the given value in the given string.
-     *
-     * @param { string | string[] } search
-     * @param { string } replace
-     * @param { string } subject
-     * @param { boolean } caseSensitive
-     *
-     * @return { string }
-     */
-    static replace(search: string | string[], replace: string, subject: string, caseSensitive: boolean = true): string {
-        if (!(search instanceof Array)) {
-            search = [search];
-        }
-
-        search.forEach((term: string | RegExp) => {
-            if (!caseSensitive) {
-                term = new RegExp(term, 'gi');
-            }
-
-            subject = subject.replaceAll(term, replace);
-        });
-
-        return subject;
-    }
-
+enum Constants {
+    YearsPerMillennium         = 1000,
+    YearsPerCentury            = 100,
+    YearsPerDecade             = 10,
+    MonthsPerYear              = 12,
+    MonthsPerQuarter           = 3,
+    QuartersPerYear            = 4,
+    WeeksPerYear               = 52,
+    WeeksPerMonth              = 4,
+    DaysPerYear                = 365,
+    DaysPerWeek                = 7,
+    HoursPerDay                = 24,
+    MinutesPerHour             = 60,
+    SecondsPerMinute           = 60,
+    SecondsPerHour             = 3600,
+    MillisecondsPerSecond      = 1000,
+    MillisecondsPerDay         = 86400000,
+    MicrosecondsPerMillisecond = 1000,
+    MicrosecondsPerSecond      = 1000000
 }
 
 class Carbon {
@@ -250,26 +212,13 @@ class Carbon {
      * @returns { string }
      */
     format(format: string): string {
-        const options: object = {
-            year    : 'numeric',
-            month   : 'numeric',
-            day     : 'numeric',
-            hour    : 'numeric',
-            minute  : 'numeric',
-            second  : 'numeric',
-            hour12  : undefined,
-            timeZone: this.#timezone ?? undefined,
-        };
-
         if (this.#date.toString() === 'Invalid Date') {
             return 'Invalid Date';
         }
 
-        let date: string     = '';
-        let days: string[]   = [];
-        let months: string[] = [];
+        let date: string = '';
 
-        const now: Date = new Date(this.#date.toLocaleString('en-US', options));
+        const now: Date = new Date(this.#date.toLocaleString('en-US', { timeZone: this.#timezone ?? undefined }));
 
         const month: number         = now.getMonth();
         const dayOfTheWeek: number  = now.getDay();
@@ -285,14 +234,13 @@ class Carbon {
             switch (element) {
                 // Day of the month, 2 digits with leading zeros (e.g., 01 to 31)
                 case 'd':
-                    date += Str.padLeft(dayOfTheMonth.toString(), 2, '0');
+                    date += dayOfTheMonth.toString().padStart(2, '0');
 
                     break;
 
                 // A textual representation of a day, three letters (e.g., Mon through Sun)
                 case 'D':
-                    days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thr', 'Fri', 'Sat'];
-                    date += days[dayOfTheWeek];
+                    date += now.toLocaleString('default', { weekday: 'short' });
 
                     break;
 
@@ -304,8 +252,7 @@ class Carbon {
 
                 // A full textual representation of the day of the week (e.g., Sunday through Saturday)
                 case 'l':
-                    days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-                    date += days[dayOfTheWeek];
+                    date += now.toLocaleString('default', { weekday: 'long' });
 
                     break;
 
@@ -332,7 +279,7 @@ class Carbon {
                 case 'z': {
                     let start: Date          = new Date(year, 0, 0);
                     let diff: number         = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-                    let day: number          = 1000 * 60 * 60 * 24;
+                    let day: number          = Constants.MillisecondsPerDay;
                     const currentDay: number = Math.floor(diff / day);
                     date += currentDay - 1;
 
@@ -342,32 +289,32 @@ class Carbon {
                 case 'W': {
                     let parsedDate: Date = new Date(Date.UTC(year, month, dayOfTheMonth));
                     let weekDay: number  = parsedDate.getUTCDay() || 7;
-                    parsedDate.setUTCDate(parsedDate.getUTCDate() + 4 - weekDay);
-                    let yearStart: Date    = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
-                    let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / 86400000) + 1) / 7);
 
-                    date += Str.padLeft((weekNumber as unknown as string), 1, '0');
+                    parsedDate.setUTCDate(parsedDate.getUTCDate() + 4 - weekDay);
+
+                    let yearStart: Date    = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
+                    let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / Constants.MillisecondsPerDay) + 1) / Constants.DaysPerWeek);
+
+                    date += weekNumber.toString().padStart(2, '0');
 
                     break;
                 }
                 // A full textual representation of a month, such as January or March (e.g., January through December)
                 case 'F':
-                    months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-                    date += months[month];
+                    date += now.toLocaleString('default', { month: 'long' });
 
                     break;
 
                 // Numeric representation of a month, with leading zeros (e.g., 01 through 12)
                 case 'm': {
                     const currentMonth: number = month + 1;
-                    date += Str.padLeft(currentMonth.toString(), 2, '0');
+                    date += currentMonth.toString().padStart(2, '0');
 
                     break;
                 }
                 // A short textual representation of a month, three letters (e.g., Jan through Dec)
                 case 'M':
-                    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-                    date += months[month];
+                    date += now.toLocaleString('default', { month: 'short' });
 
                     break;
 
@@ -442,7 +389,7 @@ class Carbon {
                     const minutes: number = now.getUTCMinutes();
                     const seconds: number = now.getUTCSeconds();
 
-                    date += Math.floor((((hours + 1) % 24) + minutes / 60 + seconds / 3600) * 1000 / 24);
+                    date += Math.floor((((hours + 1) % Constants.HoursPerDay) + minutes / Constants.MinutesPerHour + seconds / Constants.SecondsPerHour) * Constants.MillisecondsPerSecond / Constants.HoursPerDay);
 
                     break;
                 }
@@ -460,25 +407,25 @@ class Carbon {
 
                 // 12-hour format of an hour with leading zeros (e.g., 01 through 12)
                 case 'h':
-                    date += Str.padLeft((hours > 12 ? hours - 12 : hours).toString(), 2, '0');
+                    date += (hours > 12 ? hours - 12 : hours).toString().padStart(2, '0');
 
                     break;
 
                 // 24-hour format of an hour with leading zeros (e.g., 00 through 23)
                 case 'H':
-                    date += Str.padLeft(hours.toString(), 2, '0');
+                    date += hours.toString().padStart(2, '0');
 
                     break;
 
                 // Minutes with leading zeros (e.g., 00 to 59)
                 case 'i':
-                    date += Str.padLeft(minutes.toString(), 2, '0');
+                    date += minutes.toString().padStart(2, '0');
 
                     break;
 
                 // Seconds with leading zeros (e.g., 00 to 59)
                 case 's':
-                    date += Str.padLeft(seconds.toString(), 2, '0');
+                    date += seconds.toString().padStart(2, '0');
 
                     break;
 
@@ -488,7 +435,7 @@ class Carbon {
 
                 // Milliseconds. (e.g., 654)
                 case 'v': {
-                    date += Str.padLeft(this.#date.getMilliseconds().toString(), 3, '0');
+                    date += this.#date.getMilliseconds().toString().padEnd(3, '0');
 
                     break;
                 }
@@ -552,7 +499,7 @@ class Carbon {
                         .pop()!
                         .trim();
 
-                    date += timeZoneData.replace('GMT', 'UTC').split(/[+-]/)[0];
+                    date += this.#timezone ?? timeZoneData.replace('GMT', 'UTC').split(/[+-]/)[0];
 
                     break;
                 }
@@ -561,12 +508,19 @@ class Carbon {
                 // The offset for timezones west of UTC is always negative,
                 // and for those east of UTC is always positive. (e.g., -43200 through 50400)
                 case 'Z': {
-                    const timeZoneData = now.toLocaleDateString('en-us', { timeZoneName: 'short', timeZone: this.#timezone ?? undefined, })
-                        .split(', ')
-                        .pop()!
-                        .trim();
+                    const timezone: string                = now.toLocaleDateString('en-us', { timeZoneName: 'longOffset', timeZone: this.#timezone ?? undefined });
+                    const symbol: RegExpMatchArray | null = timezone.match(/[+-]/);
+                    const data: string[]                  = timezone.split(/[+-]/);
 
-                    date += timeZoneData === 'GMT' ? 0 : parseInt(timeZoneData.substring(3)) * 3600;
+                    const sign: string   = symbol ? symbol.pop()! : '+';
+                    const offset: string = data.length === 2 ? (data[1] as string) : '0:00';
+
+                    const hours: number   = parseInt(offset.split(':')[0] as string);
+                    const minutes: number = parseInt(offset.split(':')[1] as string);
+
+                    const offsetInSeconds: number = hours * Constants.SecondsPerHour + minutes * Constants.SecondsPerMinute;
+
+                    date += `${sign}${offsetInSeconds}`;
 
                     break;
                 }
@@ -586,7 +540,7 @@ class Carbon {
 
                 // Seconds since the Unix Epoch (e.g., January 1, 1970 00:00:00 GMT)
                 case 'U': {
-                    date += Math.floor(now.getTime() / 1000);
+                    date += Math.floor(now.getTime() / Constants.MillisecondsPerSecond);
 
                     break;
                 }
@@ -605,7 +559,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLocal(): boolean {
-        return this.format('Z') as unknown as number / 60 === this.#date.getTimezoneOffset() * -1;
+        return this.local;
     }
 
     /**
@@ -614,7 +568,7 @@ class Carbon {
      * @returns { boolean }
      */
     isUtc(): boolean {
-        return this.format('Z') as unknown as number / 60 === 0;
+        return this.utc;
     }
 
     /**
@@ -632,7 +586,7 @@ class Carbon {
      * @returns { boolean }
      */
     isDst(): boolean {
-        return this.format('I') === '1';
+        return this.dst;
     }
 
     /**
@@ -641,7 +595,7 @@ class Carbon {
      * @returns { boolean }
      */
     isMonday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Monday;
+        return this.dayOfWeek === DayOfTheWeek.Monday;
     }
 
     /**
@@ -650,7 +604,7 @@ class Carbon {
      * @returns { boolean }
      */
     isTuesday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Tuesday;
+        return this.dayOfWeek === DayOfTheWeek.Tuesday;
     }
 
     /**
@@ -659,7 +613,7 @@ class Carbon {
      * @returns { boolean }
      */
     isWednesday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Wednesday;
+        return this.dayOfWeek === DayOfTheWeek.Wednesday;
     }
 
     /**
@@ -668,7 +622,7 @@ class Carbon {
      * @returns { boolean }
      */
     isThursday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Thursday;
+        return this.dayOfWeek === DayOfTheWeek.Thursday;
     }
 
     /**
@@ -677,7 +631,7 @@ class Carbon {
      * @returns { boolean }
      */
     isFriday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Friday;
+        return this.dayOfWeek === DayOfTheWeek.Friday;
     }
 
     /**
@@ -686,7 +640,7 @@ class Carbon {
      * @returns { boolean }
      */
     isSaturday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Saturday;
+        return this.dayOfWeek === DayOfTheWeek.Saturday;
     }
 
     /**
@@ -695,7 +649,7 @@ class Carbon {
      * @returns { boolean }
      */
     isSunday(): boolean {
-        return parseInt(this.format('N')) == DayOfTheWeek.Sunday;
+        return this.dayOfWeek === DayOfTheWeek.Sunday;
     }
 
     /**
@@ -722,14 +676,404 @@ class Carbon {
      * Determine if the instance is in the same year as the current moment next year.
      */
     isNextYear(): boolean {
-        return parseInt(this.format('Y')) === parseInt(Carbon.now().format('Y')) + 1;
+        const now: Carbon = Carbon.now();
+
+        return this.year === now.year + 1;
     }
 
     /**
      * Determine if the instance is in the same year as the current moment last year.
+     *
+     * @return { boolean }
      */
     isLastYear(): boolean {
-        return parseInt(this.format('Y')) === parseInt(Carbon.now().format('Y')) - 1;
+        const now: Carbon = Carbon.now();
+
+        return this.year === now.year - 1;
+    }
+
+    /**
+     * Determine if the given date is in the same month as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameMonth(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m', date);
+    }
+
+    /**
+     * Determine if the instance is in the same month as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentMonth(): boolean {
+        return this.isSameAs('Y-m', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same month as the current moment next month.
+     *
+     * @returns { boolean }
+     */
+    isNextMonth(): boolean {
+        const now: Carbon   = Carbon.now();
+        const month: string = (now.month + 1).toString().padStart(2, '0');
+
+        return this.format('Y-m') === `${now.year}-${month}`;
+    }
+
+    /**
+     * Determine if the instance is in the same month as the current moment last month.
+     *
+     * @returns { boolean }
+     */
+    isLastMonth(): boolean {
+        const now: Carbon   = Carbon.now();
+        const month: string = (now.month - 1).toString().padStart(2, '0');
+
+        return this.format('Y-m') === `${now.year}-${month}`;
+    }
+
+    /**
+     * Determine if the given date is in the same week as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameWeek(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('o-W', date);
+    }
+
+    /**
+     * Determine if the instance is in the same week as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentWeek(): boolean {
+        return this.isSameAs('o-W', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same week as the current moment next week.
+     *
+     * @returns { boolean }
+     */
+    isNextWeek(): boolean {
+        const now: Carbon  = Carbon.now();
+        const week: string = (now.week + 1).toString().padStart(2, '0');
+
+        return this.format('o-W') === `${now.year}-${week}`;
+    }
+
+    /**
+     * Determine if the instance is in the same week as the current moment last week.
+     *
+     * @returns { boolean }
+     */
+    isLastWeek(): boolean {
+        const now: Carbon  = Carbon.now();
+        const week: string = (now.week - 1).toString().padStart(2, '0');
+
+        return this.format('o-W') === `${now.year}-${week}`;
+    }
+
+    /**
+     * Determine if the given date is in the same day as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameDay(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m-d', date);
+    }
+
+    /**
+     * Determine if the instance is in the same day as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentDay(): boolean {
+        return this.isSameAs('Y-m-d', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same day as the current moment next day.
+     *
+     * @returns { boolean }
+     */
+    isNextDay(): boolean {
+        const now: Carbon   = Carbon.now();
+        const year: string  = now.format('Y');
+        const month: string = now.format('m');
+        const day: string   = (now.day + 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d') === `${year}-${month}-${day}`;
+    }
+
+    /**
+     * Determine if the instance is in the same day as the current moment last day.
+     */
+    isLastDay(): boolean {
+        const now: Carbon   = Carbon.now();
+        const year: string  = now.format('Y');
+        const month: string = now.format('m');
+        const day: string   = (now.day - 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d') === `${year}-${month}-${day}`;
+    }
+
+    /**
+     * Determine if the given date is in the same hour as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameHour(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m-d H', date);
+    }
+
+    /**
+     * Determine if the instance is in the same hour as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentHour(): boolean {
+        return this.isSameAs('Y-m-d H', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same hour as the current moment next hour.
+     *
+     * @returns { boolean }
+     */
+    isNextHour(): boolean {
+        const now: Carbon   = Carbon.now();
+        const year: string  = now.format('Y');
+        const month: string = now.format('m');
+        const day: string   = now.format('d');
+        const hour: string  = (now.hour + 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H') === `${year}-${month}-${day} ${hour}`;
+    }
+
+    /**
+     * Determine if the instance is in the same hour as the current moment last hour.
+     *
+     * @returns { boolean }
+     */
+    isLastHour(): boolean {
+        const now: Carbon   = Carbon.now();
+        const year: string  = now.format('Y');
+        const month: string = now.format('m');
+        const day: string   = now.format('d');
+        const hour: string  = (now.hour - 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H') === `${year}-${month}-${day} ${hour}`;
+    }
+
+    /**
+     * Determine if the given date is in the same minute as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameMinute(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m-d H:i', date);
+    }
+
+    /**
+     * Determine if the instance is in the same minute as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentMinute(): boolean {
+        return this.isSameAs('Y-m-d H:i', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same minute as the current moment next minute.
+     *
+     * @return { boolean }
+     */
+    isNextMinute(): boolean {
+        const now: Carbon    = Carbon.now();
+        const year: string   = now.format('Y');
+        const month: string  = now.format('m');
+        const day: string    = now.format('d');
+        const hour: string   = now.format('H');
+        const minute: string = (now.minute + 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H:i') === `${year}-${month}-${day} ${hour}:${minute}`;
+    }
+
+    /**
+     * Determine if the instance is in the same minute as the current moment last minute.
+     *
+     * @returns { boolean }
+     */
+    isLastMinute(): boolean {
+        const now: Carbon    = Carbon.now();
+        const year: string   = now.format('Y');
+        const month: string  = now.format('m');
+        const day: string    = now.format('d');
+        const hour: string   = now.format('H');
+        const minute: string = (now.minute - 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H:i') === `${year}-${month}-${day} ${hour}:${minute}`;
+    }
+
+    /**
+     * Determine if the given date is in the same second as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameSecond(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m-d H:i:s', date);
+    }
+
+    /**
+     * Determine if the instance is in the same second as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentSecond(): boolean {
+        return this.isSameAs('Y-m-d H:i:s', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same second as the current moment next second.
+     *
+     * @returns { boolean }
+     */
+    isNextSecond(): boolean {
+        const now: Carbon    = Carbon.now();
+        const year: string   = now.format('Y');
+        const month: string  = now.format('m');
+        const day: string    = now.format('d');
+        const hour: string   = now.format('H');
+        const minute: string = now.format('i');
+        const second: string = (now.second + 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H:i:s') === `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    }
+
+    /**
+     * Determine if the instance is in the same second as the current moment last second.
+     *
+     * @returns { boolean }
+     */
+    isLastSecond(): boolean {
+        const now: Carbon    = Carbon.now();
+        const year: string   = now.format('Y');
+        const month: string  = now.format('m');
+        const day: string    = now.format('d');
+        const hour: string   = now.format('H');
+        const minute: string = now.format('i');
+        const second: string = (now.second - 1).toString().padStart(2, '0');
+
+        return this.format('Y-m-d H:i:s') === `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+    }
+
+    /**
+     * Determine if the given date is in the same millisecond as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameMillisecond(date: Carbon | Date | string | null = null): boolean {
+        return this.isSameAs('Y-m-d H:i:s.v', date);
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentMillisecond(): boolean {
+        return this.isSameAs('Y-m-d H:i:s.v', new Date);
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment next millisecond.
+     *
+     * @returns { boolean }
+     */
+    isNextMillisecond(): boolean {
+        const now                 = Carbon.now();
+        const year                = now.format('Y');
+        const month               = now.format('m');
+        const day                 = now.format('d');
+        const hour                = now.format('H');
+        const minute              = now.format('m');
+        const second              = now.format('s');
+        const millisecond: string = (now.millisecond + 1).toString().padEnd(3, '0');
+
+        return this.format('Y-m-d H:i:s.v') === `${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}`;
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment last millisecond.
+     *
+     * @returns { boolean }
+     */
+    isLastMillisecond(): boolean {
+        const now                 = Carbon.now();
+        const year                = now.format('Y');
+        const month               = now.format('m');
+        const day                 = now.format('d');
+        const hour                = now.format('H');
+        const minute              = now.format('m');
+        const second              = now.format('s');
+        const millisecond: string = (now.millisecond - 1).toString().padEnd(3, '0');
+
+        return this.format('Y-m-d H:i:s.v') === `${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}`;
+    }
+
+    /**
+     * Determine if the given date is in the same millisecond as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameMicrosecond(date: Carbon | Date | string | null = null): boolean {
+        throw new Error('isSameMicrosecond method is not supported.');
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentMicrosecond(): boolean {
+        throw new Error('isCurrentMicrosecond method is not supported.');
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment next millisecond.
+     *
+     * @returns { boolean }
+     */
+    isNextMicrosecond(): boolean {
+        throw new Error('isNextMicrosecond method is not supported.');
+    }
+
+    /**
+     * Determine if the instance is in the same millisecond as the current moment last millisecond.
+     *
+     * @returns { boolean }
+     */
+    isLastMicrosecond(): boolean {
+        throw new Error('isLastMicrosecond method is not supported.');
     }
 
     /**
@@ -738,7 +1082,7 @@ class Carbon {
      * @param { string } format
      * @param { Carbon | Date | string | null } date
      *
-     * @return bool
+     * @return { boolean }
      */
     isSameAs(format: string, date: Carbon | Date | string | null = null): boolean {
         return this.format(format) === this.#resolveCarbon(date).format(format);
@@ -1028,18 +1372,18 @@ class Carbon {
      */
     toObject(): DateRepresentation {
         return {
-            year     : this.#date.getFullYear(),
-            month    : this.#date.getMonth() + 1,
-            day      : this.#date.getDate(),
-            dayOfWeek: parseInt(this.format('N')),
-            dayOfYear: parseInt(this.format('z')),
-            hour     : this.#date.getHours(),
-            minute   : this.#date.getMinutes(),
-            second   : this.#date.getSeconds(),
+            year     : this.year,
+            month    : this.month,
+            day      : this.day,
+            dayOfWeek: this.dayOfWeek,
+            dayOfYear: this.dayOfYear,
+            hour     : this.hour,
+            minute   : this.minute,
+            second   : this.second,
             micro    : undefined,
-            timestamp: this.#date.valueOf(),
+            timestamp: this.timestamp,
             formatted: this.format('Y-m-d H:i:s'),
-            timezone : this.format('T (P)'),
+            timezone : this.timezone,
         };
     }
 
