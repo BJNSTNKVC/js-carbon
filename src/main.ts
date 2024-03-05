@@ -182,6 +182,195 @@ class Carbon {
     }
 
     /**
+     * Year of this instance.
+     *
+     * @returns { number }
+     */
+    get year(): number {
+        return this.get('year') as number;
+    }
+
+    /**
+     * Month of this instance.
+     *
+     * @returns { number }
+     */
+    get month(): number {
+        return this.get('month') as number;
+    }
+
+    /**
+     * Week of this instance.
+     *
+     * @returns { number }
+     */
+    get week(): number {
+        return this.get('week') as number;
+    }
+
+    /**
+     * Day of this instance.
+     *
+     * @returns { number }
+     */
+    get day(): number {
+        return this.get('day') as number;
+    }
+
+    /**
+     * Day of the week of this instance (0 for Sunday through 6 for Saturday).
+     *
+     * @returns { number }
+     */
+    get dayOfWeek(): number {
+        return this.get('dayOfWeek') as number;
+    }
+
+    /**
+     * Day of the year of this instance
+     *
+     * @returns { number }
+     */
+    get dayOfYear(): number {
+        return this.get('dayOfYear') as number;
+    }
+
+    /**
+     * Hour of this instance.
+     *
+     * @returns { number }
+     */
+    get hour(): number {
+        return this.get('hour') as number;
+    }
+
+    /**
+     * Minute of this instance.
+     *
+     * @returns { number }
+     */
+    get minute(): number {
+        return this.get('minute') as number;
+    }
+
+    /**
+     * Second of this instance.
+     *
+     * @returns { number }
+     */
+    get second(): number {
+        return this.get('second') as number;
+    }
+
+    /**
+     * Millisecond of this instance.
+     *
+     * @returns { number }
+     */
+    get millisecond(): number {
+        return this.get('millisecond') as number;
+    }
+
+    /**
+     * Microsecond of this instance.
+     *
+     * @returns { number }
+     */
+    get microsecond(): number {
+        return this.get('microsecond') as number;
+    }
+
+    /**
+     * Seconds since the Unix Epoch.
+     *
+     * @returns { number }
+     */
+    get timestamp(): number {
+        return this.get('timestamp') as number;
+    }
+
+    /**
+     * Quarter of this instance.
+     *
+     * @returns { number }
+     */
+    get quarter(): number {
+        return this.get('quarter') as number;
+    }
+
+    /**
+     * Decade of this instance.
+     *
+     * @returns { number }
+     */
+    get decade(): number {
+        return this.get('decade') as number;
+    }
+
+    /**
+     * Century of this instance.
+     *
+     * @returns { number }
+     */
+    get century(): number {
+        return this.get('century') as number;
+    }
+
+    /**
+     * Millennium of this instance.
+     *
+     * @returns { number }
+     */
+    get millennium(): number {
+        return this.get('millennium') as number;
+    }
+
+    /**
+     * Timezone offset in seconds from UTC.
+     *
+     * @returns { number }
+     */
+    get offset(): number {
+        return this.get('offset') as number;
+    }
+
+    /**
+     * Daylight savings time indicator.
+     *
+     * @returns { boolean }
+     */
+    get dst(): boolean {
+        return this.get('dst') as boolean;
+    }
+
+    /**
+     * Determine if the timezone is local.
+     *
+     * @returns { boolean }
+     */
+    get local(): boolean {
+        return this.get('local') as boolean;
+    }
+
+    /**
+     * Determine if the timezone is UTC.
+     *
+     * @returns { boolean }
+     */
+    get utc(): boolean {
+        return this.get('utc') as boolean;
+    }
+
+    /**
+     * Current timezone.
+     *
+     * @returns { string }
+     */
+    get timezone(): string {
+        return this.get('timezone') as string;
+    }
+
+    /**
      * Get a Carbon instance for the current date and time.
      *
      * @param { string | null } timezone
@@ -1412,6 +1601,120 @@ class Carbon {
      */
     toString(): string {
         return this.date;
+    }
+
+    /**
+     * Get a part of the Carbon object.
+     *
+     * @params { string } value
+     *
+     * @returns { string | number }
+     */
+    get(value: CarbonGetters): number | string | boolean {
+        switch (value) {
+            case 'year': {
+                return parseInt(this.format('Y'));
+            }
+
+            case 'month': {
+                return parseInt(this.format('n'));
+            }
+
+            case 'week' : {
+                return parseInt(this.format('W'));
+            }
+
+            case 'day': {
+                return parseInt(this.format('j'));
+            }
+
+            case 'hour': {
+                return parseInt(this.format('G'));
+            }
+
+            case 'minute': {
+                return parseInt(this.format('i'));
+            }
+
+            case 'second': {
+                return parseInt(this.format('s'));
+            }
+
+            case 'millisecond': {
+                return parseInt(this.format('v'));
+            }
+
+            case 'microsecond': {
+                return parseInt(this.format('u'));
+            }
+
+            case 'timestamp': {
+                return parseInt(this.format('U'));
+            }
+
+            case 'dayOfWeek': {
+                return parseInt(this.format('w'));
+            }
+
+            case 'dayOfYear': {
+                return parseInt(this.format('z'));
+            }
+
+            case 'quarter': {
+                return Math.ceil(this.get('month') as number / Constants.MonthsPerQuarter);
+            }
+
+            case 'decade': {
+                return Math.ceil(this.get('year') as number / Constants.YearsPerDecade);
+            }
+
+            case 'century': {
+                let factor: number = 1;
+                let year: number   = this.get('year') as number;
+
+                if (year < 0) {
+                    year   = -year;
+                    factor = -1;
+                }
+
+                return factor * Math.ceil(year / Constants.YearsPerCentury);
+            }
+
+            case 'millennium': {
+                let factor: number = 1;
+                let year: number   = this.get('year') as number;
+
+                if (year < 0) {
+                    year   = -year;
+                    factor = -1;
+                }
+
+                return factor * Math.ceil(year / Constants.YearsPerMillennium);
+            }
+
+            case 'offset': {
+                return parseInt(this.format('Z'));
+            }
+
+            case 'dst': {
+                return this.format('I') === '1';
+            }
+
+            case 'local': {
+                return parseInt(this.format('Z')) / Constants.SecondsPerMinute === this.#date.getTimezoneOffset() * -1;
+            }
+
+            case 'utc': {
+                return parseInt(this.format('Z')) / Constants.SecondsPerHour === 0;
+            }
+
+            case 'timezone': {
+                return this.format('T (P)');
+            }
+
+            default:
+                throw new Error(`Unknown getter.`);
+        }
     }
 }
 
