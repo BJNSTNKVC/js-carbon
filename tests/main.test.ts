@@ -80,7 +80,7 @@ describe('Carbon.format()', (): void => {
     });
 
     test('\'z\' returns numeric representation of the day of the week', (): void => {
-        expect(Carbon.parse('2024-02-29', 'CET').format('z')).toEqual('59');
+        expect(Carbon.parse('2024-02-29', 'CET').format('z')).toEqual('60');
     });
 
     test('\'W\' returns ISO 8601 week number of year, weeks starting on Monday', (): void => {
@@ -976,19 +976,291 @@ describe('Carbon.isLastMicrosecond()', (): void => {
     });
 });
 
+describe('Carbon.isSameQuarter()', (): void => {
+    test('returns true if the instance is in the same quarter as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameQuarter(Carbon.parse('2024-02-29', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same quarter as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameQuarter(Carbon.parse('2024-06-05', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true if the instance is in the same quarter as now', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isSameQuarter()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same quarter as now', (): void => {
+        const date = Carbon.now().subMonths(4);
+
+        expect(date.isSameQuarter()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentQuarter()', (): void => {
+    test('returns true if the instance is in the current quarter', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isCurrentQuarter()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current quarter', (): void => {
+        const date = Carbon.now().subMonths(4);
+
+        expect(date.isCurrentQuarter()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextQuarter()', (): void => {
+    test('returns true if the instance is in the next quarter', (): void => {
+        const date = Carbon.now().addMonths(3);
+
+        expect(date.isNextQuarter()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next quarter', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isNextQuarter()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastQuarter()', (): void => {
+    test('returns true if the instance is in the last quarter', (): void => {
+        const date = Carbon.now().subMonths(3);
+
+        expect(date.isLastQuarter()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last quarter', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isLastQuarter()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameDecade()', (): void => {
+    test('returns true if the instance is in the same decade as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameDecade(Carbon.parse('2021-03-05', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same decade as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameDecade(Carbon.parse('2015-06-05', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true if the instance is in the same decade as now', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isSameDecade()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same decade as now', (): void => {
+        const date = Carbon.now().subYears(12);
+
+        expect(date.isSameDecade()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentDecade()', (): void => {
+    test('returns true if the instance is in the current decade', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isCurrentDecade()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current decade', (): void => {
+        const date = Carbon.now().subYears(12);
+
+        expect(date.isCurrentDecade()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextDecade()', (): void => {
+    test('returns true if the instance is in the next decade', (): void => {
+        const date = Carbon.now().addYears(10);
+
+        expect(date.isNextDecade()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next decade', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isNextDecade()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastDecade()', (): void => {
+    test('returns true if the instance is in the last decade', (): void => {
+        const date = Carbon.now().subYears(10);
+
+        expect(date.isLastDecade()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last decade', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isLastDecade()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameCentury()', (): void => {
+    test('returns true if the instance is in the same century as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameCentury(Carbon.parse('2004-03-05', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same century as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameCentury(Carbon.parse('1900-06-05', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true if the instance is in the same century as now', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isSameCentury()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same century as now', (): void => {
+        const date = Carbon.now().subYears(110);
+
+        expect(date.isSameCentury()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentCentury()', (): void => {
+    test('returns true if the instance is in the current century', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isCurrentCentury()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current century', (): void => {
+        const date = Carbon.now().subYears(110);
+
+        expect(date.isCurrentCentury()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextCentury()', (): void => {
+    test('returns true if the instance is in the next century', (): void => {
+        const date = Carbon.now().addYears(100);
+
+        expect(date.isNextCentury()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next century', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isNextCentury()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastCentury()', (): void => {
+    test('returns true if the instance is in the last century', (): void => {
+        const date = Carbon.now().subYears(100);
+
+        expect(date.isLastCentury()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last century', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isLastCentury()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isSameMillennium()', (): void => {
+    test('returns true if the instance is in the same millennium as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameMillennium(Carbon.parse('2004-03-05', 'CET'))).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same millennium as the provided date', (): void => {
+        const date = Carbon.parse('2024-03-05', 'CET');
+
+        expect(date.isSameMillennium(Carbon.parse('1000-06-05', 'CET'))).toBeFalsy();
+    });
+
+    test('returns true if the instance is in the same millennium as now', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isSameMillennium()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the same millennium as now', (): void => {
+        const date = Carbon.now().subYears(1000);
+
+        expect(date.isSameMillennium()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isCurrentMillennium()', (): void => {
+    test('returns true if the instance is in the current millennium', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isCurrentMillennium()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the current millennium', (): void => {
+        const date = Carbon.now().subYears(1000);
+
+        expect(date.isCurrentMillennium()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isNextMillennium()', (): void => {
+    test('returns true if the instance is in the next millennium', (): void => {
+        const date = Carbon.now().addYears(1000);
+
+        expect(date.isNextMillennium()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the next millennium', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isNextMillennium()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastMillennium()', (): void => {
+    test('returns true if the instance is in the last millennium', (): void => {
+        const date = Carbon.now().subYears(1000);
+
+        expect(date.isLastMillennium()).toBeTruthy();
+    });
+
+    test('returns false if the instance is not in the last millennium', (): void => {
+        const date = Carbon.now();
+
+        expect(date.isLastMillennium()).toBeFalsy();
+    });
+});
+
 describe('Carbon.isSameAs()', (): void => {
     test('returns true when the formatted dates match', (): void => {
         const carbon       = Carbon.parse('2024-03-10 15:00:00', 'CET');
         const date: string = '2024-03-10 15:00:00';
 
-        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeTruthy();
+        expect(carbon.isSameAs('Y-m-d H:i:s', date)).toBeTruthy();
     });
 
     test('returns false when the formatted dates do not match', (): void => {
         const carbon = Carbon.parse('2024-03-10 15:00:00', 'CET');
         const date   = Carbon.parse('2024-03-10 16:00:00', 'CET');
 
-        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
+        expect(carbon.isSameAs('Y-m-d H:i:s', date)).toBeFalsy();
     });
 
     test('returns true when comparing only the year part and it matches', (): void => {
@@ -1002,21 +1274,21 @@ describe('Carbon.isSameAs()', (): void => {
         const carbon     = Carbon.parse('2024-03-10', 'CET');
         const date: Date = new Date('2024-03-10T00:00:00Z');
 
-        expect(carbon.isSameAs('YYYY-MM-DD', date)).toBeTruthy();
+        expect(carbon.isSameAs('Y-m-d', date)).toBeTruthy();
     });
 
     test('returns false when comparing with a different format and the dates would otherwise match', (): void => {
         const carbon       = Carbon.parse('2024-03-10 15:00:00', 'CET');
         const date: string = '2024-03-10';
 
-        expect(carbon.isSameAs('YYYY-MM-DD HH:mm:ss', date)).toBeFalsy();
-        expect(carbon.isSameAs('YYYY-MM-DD', date)).toBeTruthy();
+        expect(carbon.isSameAs('Y-m-d H:i:s', date)).toBeFalsy();
+        expect(carbon.isSameAs('Y-m-d', date)).toBeTruthy();
     });
 
     test('returns true when the second date is null and the format matches the current date', (): void => {
         const today = new Carbon();
 
-        expect(today.isSameAs('YYYY-MM-DD')).toBeTruthy();
+        expect(today.isSameAs('Y-m-d')).toBeTruthy();
     });
 });
 
@@ -1241,7 +1513,7 @@ describe('Carbon.toObject()', (): void => {
             month    : 3,
             day      : 1,
             dayOfWeek: 5,
-            dayOfYear: 60,
+            dayOfYear: 61,
             hour     : 12,
             minute   : 45,
             second   : 0,
@@ -1325,7 +1597,7 @@ describe('Carbon.get()', (): void => {
     });
 
     test('\'dayOfYear\' returns the day of the year', (): void => {
-        expect(Carbon.parse('2024-02-29', 'CET').get('dayOfYear')).toEqual(59);
+        expect(Carbon.parse('2024-02-29', 'CET').get('dayOfYear')).toEqual(60);
     });
 
     test('\'quarter\' returns the quarter', (): void => {
@@ -1369,3 +1641,467 @@ describe('Carbon.get()', (): void => {
     });
 });
 
+describe('Carbon.setDate()', (): void => {
+    test('sets the date to the given year, month, and day', (): void => {
+        expect(Carbon.parse('2024-01-01', 'CET').setDate(2025, 11, 25).get('year')).toEqual(2025);
+        expect(Carbon.parse('2024-01-01', 'CET').setDate(2025, 11, 25).get('month')).toEqual(12); // Note: month is 0-indexed in JavaScript Date, but not here
+        expect(Carbon.parse('2024-01-01', 'CET').setDate(2025, 11, 25).get('day')).toEqual(25);
+    });
+});
+
+describe('Carbon.setTime()', (): void => {
+    test('sets the time to the given hour, minute, second, and millisecond', (): void => {
+        const carbon = Carbon.parse('2024-03-31', 'CET').setTime(12, 30, 15, 250);
+
+        expect(carbon.get('hour')).toEqual(12);
+        expect(carbon.get('minute')).toEqual(30);
+        expect(carbon.get('second')).toEqual(15);
+        expect(carbon.get('millisecond')).toEqual(250);
+    });
+});
+
+describe('Carbon.setYear()', (): void => {
+    test('sets the year to the given value', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').setYear(2025).get('year')).toEqual(2025);
+    });
+});
+
+describe('Carbon.setMonth()', (): void => {
+    test('sets the month to the given value', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').setMonth(1).get('month')).toEqual(1);
+    });
+});
+
+describe('Carbon.setDay()', (): void => {
+    test('sets the day to the given value', (): void => {
+        expect(Carbon.parse('2024-03-31', 'CET').setDay(15).get('day')).toEqual(15);
+    });
+});
+
+describe('Carbon.setHour()', (): void => {
+    test('sets the hour to the given value', (): void => {
+        expect(Carbon.parse('2024-03-31 23:59', 'CET').setHour(12).get('hour')).toEqual(12);
+    });
+});
+
+describe('Carbon.setMinute()', (): void => {
+    test('sets the minute to the given value', (): void => {
+        expect(Carbon.parse('2024-03-31 23:59', 'CET').setMinute(30).get('minute')).toEqual(30);
+    });
+});
+
+describe('Carbon.setSecond()', (): void => {
+    test('sets the second to the given value', (): void => {
+        expect(Carbon.parse('2024-03-31 23:59:58', 'CET').setSecond(45).get('second')).toEqual(45);
+    });
+});
+
+describe('Carbon.setMillisecond()', (): void => {
+    test('sets the millisecond to the given value', (): void => {
+        expect(Carbon.parse('2024-03-31 23:59:58.999', 'CET').setMillisecond(500).get('millisecond')).toEqual(500);
+    });
+});
+
+describe('Carbon.addYear()', (): void => {
+    test('adds one year to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addYear().get('year')).toEqual(2025);
+    });
+
+    test('adds multiple years to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addYears(5).get('year')).toEqual(2029);
+    });
+});
+
+describe('Carbon.addMonth()', (): void => {
+    test('adds one month to the instance', (): void => {
+        expect(Carbon.parse('2024-01-31', 'CET').addMonth().get('month')).toEqual(3);
+    });
+
+    test('adds multiple months to the instance', (): void => {
+        expect(Carbon.parse('2024-01-31', 'CET').addMonths(5).get('month')).toEqual(7);
+    });
+});
+
+describe('Carbon.addDay()', (): void => {
+    test('adds one day to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addDay().get('day')).toEqual(1);
+    });
+
+    test('adds multiple days to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addDays(5).get('day')).toEqual(5);
+    });
+});
+
+describe('Carbon.addHour()', (): void => {
+    test('adds one hour to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addHour().get('hour')).toEqual(13);
+    });
+
+    test('adds multiple hours to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addHours(5).get('hour')).toEqual(17);
+    });
+});
+
+describe('Carbon.addMinute()', (): void => {
+    test('adds one minute to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addMinute().get('minute')).toEqual(1);
+    });
+
+    test('adds multiple minutes to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addMinutes(5).get('minute')).toEqual(5);
+    });
+});
+
+describe('Carbon.addSecond()', (): void => {
+    test('adds one second to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addSecond().get('second')).toEqual(1);
+    });
+
+    test('adds multiple seconds to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addSeconds(5).get('second')).toEqual(5);
+    });
+});
+
+describe('Carbon.addMillisecond()', (): void => {
+    test('adds one millisecond to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.000', 'CET').addMillisecond().get('millisecond')).toEqual(100);
+    });
+
+    test('adds multiple milliseconds to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.000', 'CET').addMilliseconds(5).get('millisecond')).toEqual(500);
+    });
+});
+
+describe('Carbon.addMillennium()', (): void => {
+    test('adds one millennium to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addMillennium().get('year')).toEqual(3024);
+    });
+
+    test('adds multiple millennia to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addMillenniums(5).get('year')).toEqual(7024);
+    });
+});
+
+describe('Carbon.addCentury()', (): void => {
+    test('adds one century to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addCentury().get('year')).toEqual(2124);
+    });
+
+    test('adds multiple centuries to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addCenturies(5).get('year')).toEqual(2524);
+    });
+});
+
+describe('Carbon.addDecade()', (): void => {
+    test('adds one decade to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addDecade().get('year')).toEqual(2034);
+    });
+
+    test('adds multiple decades to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addDecades(5).get('year')).toEqual(2074);
+    });
+});
+
+describe('Carbon.addQuarter()', (): void => {
+    test('adds one quarter to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addQuarter().get('month')).toEqual(5);
+    });
+
+    test('adds multiple quarters to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addQuarters(2).get('month')).toEqual(8);
+    });
+});
+
+describe('Carbon.addWeek()', (): void => {
+    test('adds one week to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addWeek().get('day')).toEqual(7);
+    });
+
+    test('adds multiple weeks to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addWeeks(2).get('day')).toEqual(14);
+    });
+});
+
+describe('Carbon.subYear()', () => {
+    test('subtracts one year from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subYear().get('year')).toEqual(2023);
+    });
+
+    test('subtracts multiple years from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subYears(5).get('year')).toEqual(2019);
+    });
+});
+
+describe('Carbon.subMonth()', () => {
+    test('subtracts one month from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subMonth().get('month')).toEqual(1);
+    });
+
+    test('subtracts multiple months from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subMonths(5).get('month')).toEqual(9);
+    });
+});
+
+describe('Carbon.subDay()', () => {
+    test('subtracts one day from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subDay().get('day')).toEqual(28);
+    });
+
+    test('subtracts multiple days from the instance', () => {
+        expect(Carbon.parse('2024-02-29', 'CET').subDays(5).get('day')).toEqual(24);
+    });
+});
+
+describe('Carbon.subHour()', () => {
+    test('subtracts one hour from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subHour().get('hour')).toEqual(11);
+    });
+
+    test('subtracts multiple hours from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subHours(5).get('hour')).toEqual(7);
+    });
+});
+
+describe('Carbon.subMinute()', () => {
+    test('subtracts one minute from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subMinute().get('minute')).toEqual(59);
+    });
+
+    test('subtracts multiple minutes from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subMinutes(5).get('minute')).toEqual(55);
+    });
+});
+
+describe('Carbon.subSecond()', () => {
+    test('subtracts one second from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subSecond().get('second')).toEqual(59);
+    });
+
+    test('subtracts multiple seconds from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subSeconds(5).get('second')).toEqual(55);
+    });
+});
+
+describe('Carbon.subMillisecond()', () => {
+    test('subtracts one millisecond from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00.200', 'CET').subMillisecond().get('millisecond')).toEqual(199);
+    });
+
+    test('subtracts multiple milliseconds from the instance', () => {
+        expect(Carbon.parse('2024-02-29T12:00:00.500', 'CET').subMilliseconds(5).get('millisecond')).toEqual(495);
+    });
+});
+
+describe('Carbon.subMillennium()', () => {
+    test('subtracts one millennium from the instance', () => {
+        expect(Carbon.parse('3024-02-29', 'CET').subMillennium().get('year')).toEqual(2024);
+    });
+
+    test('subtracts multiple millennia from the instance', () => {
+        expect(Carbon.parse('6024-02-29', 'CET').subMillenniums(4).get('year')).toEqual(2024);
+    });
+});
+
+describe('Carbon.subCentury()', () => {
+    test('subtracts one century from the instance', () => {
+        expect(Carbon.parse('2124-02-29', 'CET').subCentury().get('year')).toEqual(2024);
+    });
+
+    test('subtracts multiple centuries from the instance', () => {
+        expect(Carbon.parse('2524-02-29', 'CET').subCenturies(5).get('year')).toEqual(2024);
+    });
+});
+
+describe('Carbon.subDecade()', () => {
+    test('subtracts one decade from the instance', () => {
+        expect(Carbon.parse('2034-02-29', 'CET').subDecade().get('year')).toEqual(2024);
+    });
+
+    test('subtracts multiple decades from the instance', () => {
+        expect(Carbon.parse('2074-02-29', 'CET').subDecades(5).get('year')).toEqual(2024);
+    });
+});
+
+describe('Carbon.subQuarter()', () => {
+    test('subtracts one quarter from the instance', () => {
+        expect(Carbon.parse('2024-08-29', 'CET').subQuarter().get('month')).toEqual(5);
+    });
+
+    test('subtracts multiple quarters from the instance', () => {
+        expect(Carbon.parse('2024-11-29', 'CET').subQuarters(2).get('month')).toEqual(5);
+    });
+});
+
+describe('Carbon.subWeek()', () => {
+    test('subtracts one week from the instance', () => {
+        expect(Carbon.parse('2024-03-07', 'CET').subWeek().get('day')).toEqual(29);
+    });
+
+    test('subtracts multiple weeks from the instance', () => {
+        expect(Carbon.parse('2024-03-21', 'CET').subWeeks(2).get('day')).toEqual(7);
+    });
+});
+
+describe('Carbon.addUnit()', (): void => {
+    test('\'millennium\' adds 1000 years to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addUnit('millennium').format('Y-m-d')).toEqual('3024-02-29');
+    });
+
+    test('\'century\' adds 100 years to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addUnit('century').format('Y-m-d')).toEqual('2124-02-29');
+    });
+
+    test('\'decade\' adds 10 years to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addUnit('decade').format('Y-m-d')).toEqual('2034-03-01');
+    });
+
+    test('\'quarter\' adds 3 months to the instance', (): void => {
+        expect(Carbon.parse('2024-01-01', 'CET').addUnit('quarter').format('Y-m-d')).toEqual('2024-04-01');
+    });
+
+    test('\'week\' adds 7 days to the instance', (): void => {
+        expect(Carbon.parse('2024-02-01', 'CET').addUnit('week').format('Y-m-d')).toEqual('2024-02-08');
+    });
+
+    test('\'year\' adds 1 year to the instance', (): void => {
+        expect(Carbon.parse('2024-02-01', 'CET').addUnit('year').format('Y-m-d')).toEqual('2025-02-01');
+    });
+
+    test('\'year\' adds multiple years to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').addUnit('year', 2).format('Y-m-d')).toEqual('2026-03-01');
+    });
+
+    test('\'month\' adds 1 month to the instance', (): void => {
+        expect(Carbon.parse('2024-01-01', 'CET').addUnit('month').format('Y-m-d')).toEqual('2024-02-01');
+    });
+
+    test('\'month\' adds multiple months to the instance', (): void => {
+        expect(Carbon.parse('2024-01-01', 'CET').addUnit('month', 6).format('Y-m-d')).toEqual('2024-07-01');
+    });
+
+    test('\'day\' adds 1 day to the instance', (): void => {
+        expect(Carbon.parse('2024-02-01', 'CET').addUnit('day').format('Y-m-d')).toEqual('2024-02-02');
+    });
+
+    test('\'day\' adds multiple days to the instance', (): void => {
+        expect(Carbon.parse('2024-02-01', 'CET').addUnit('day', 14).format('Y-m-d')).toEqual('2024-02-15');
+    });
+
+    test('\'hour\' adds 1 hour to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00', 'CET').addUnit('hour').format('H:i')).toEqual('13:00');
+    });
+
+    test('\'hour\' adds multiple hours to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00', 'CET').addUnit('hour', 5).format('H:i')).toEqual('17:00');
+    });
+
+    test('\'minute\' adds 1 minute to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00', 'CET').addUnit('minute').format('H:i')).toEqual('12:01');
+    });
+
+    test('\'minute\' adds multiple minutes to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00', 'CET').addUnit('minute', 30).format('H:i')).toEqual('12:30');
+    });
+
+    test('\'second\' adds 1 second to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addUnit('second').format('H:i:s')).toEqual('12:00:01');
+    });
+
+    test('\'second\' adds multiple seconds to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00', 'CET').addUnit('second', 45).format('H:i:s')).toEqual('12:00:45');
+    });
+
+    test('\'millisecond\' adds 1 millisecond to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.000', 'CET').addUnit('millisecond').format('H:i:s.v')).toEqual('12:00:00.100');
+    });
+
+    test('\'millisecond\' adds multiple milliseconds to the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.000', 'CET').addUnit('millisecond', 500).format('H:i:s.v')).toEqual('12:00:00.500');
+    });
+
+    test('throws an error for an unsupported unit', (): void => {
+        expect(() => Carbon.parse('2024-02-29', 'CET').addUnit('unsupported', 1)).toThrow('Unknown unit.');
+    });
+});
+
+describe('Carbon.subUnit()', (): void => {
+    test('\'millennium\' subtracts 1000 years from the instance', (): void => {
+        expect(Carbon.parse('3024-02-29', 'CET').subUnit('millennium').format('Y-m-d')).toEqual('2024-02-29');
+    });
+
+    test('\'century\' subtracts 100 years from the instance', (): void => {
+        expect(Carbon.parse('2124-02-29', 'CET').subUnit('century').format('Y-m-d')).toEqual('2024-02-29');
+    });
+
+    test('\'decade\' subtracts 10 years from the instance', (): void => {
+        expect(Carbon.parse('2034-02-29', 'CET').subUnit('decade').format('Y-m-d')).toEqual('2024-03-01');
+    });
+
+    test('\'quarter\' subtracts 3 months from the instance', (): void => {
+        expect(Carbon.parse('2024-04-01', 'CET').subUnit('quarter').format('Y-m-d')).toEqual('2024-01-01');
+    });
+
+    test('\'week\' subtracts 7 days from the instance', (): void => {
+        expect(Carbon.parse('2024-02-08', 'CET').subUnit('week').format('Y-m-d')).toEqual('2024-02-01');
+    });
+
+    test('\'year\' subtracts 1 year from the instance', (): void => {
+        expect(Carbon.parse('2025-02-01', 'CET').subUnit('year').format('Y-m-d')).toEqual('2024-02-01');
+    });
+
+    test('\'year\' subtracts multiple years from the instance', (): void => {
+        expect(Carbon.parse('2026-02-29', 'CET').subUnit('year', 2).format('Y-m-d')).toEqual('2024-03-01');
+    });
+
+    test('\'month\' subtracts 1 month from the instance', (): void => {
+        expect(Carbon.parse('2024-02-01', 'CET').subUnit('month').format('Y-m-d')).toEqual('2024-01-01');
+    });
+
+    test('\'month\' subtracts multiple months from the instance', (): void => {
+        expect(Carbon.parse('2024-07-01', 'CET').subUnit('month', 6).format('Y-m-d')).toEqual('2024-01-01');
+    });
+
+    test('\'day\' subtracts 1 day from the instance', (): void => {
+        expect(Carbon.parse('2024-02-02', 'CET').subUnit('day').format('Y-m-d')).toEqual('2024-02-01');
+    });
+
+    test('\'day\' subtracts multiple days from the instance', (): void => {
+        expect(Carbon.parse('2024-02-15', 'CET').subUnit('day', 14).format('Y-m-d')).toEqual('2024-02-01');
+    });
+
+    test('\'hour\' subtracts 1 hour from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 13:00', 'CET').subUnit('hour').format('H:i')).toEqual('12:00');
+    });
+
+    test('\'hour\' subtracts multiple hours from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 17:00', 'CET').subUnit('hour', 5).format('H:i')).toEqual('12:00');
+    });
+
+    test('\'minute\' subtracts 1 minute from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:01', 'CET').subUnit('minute').format('H:i')).toEqual('12:00');
+    });
+
+    test('\'minute\' subtracts multiple minutes from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:30', 'CET').subUnit('minute', 30).format('H:i')).toEqual('12:00');
+    });
+
+    test('\'second\' subtracts 1 second from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:01', 'CET').subUnit('second').format('H:i:s')).toEqual('12:00:00');
+    });
+
+    test('\'second\' subtracts multiple seconds from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:45', 'CET').subUnit('second', 45).format('H:i:s')).toEqual('12:00:00');
+    });
+
+    test('\'millisecond\' subtracts 1 millisecond from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.200', 'CET').subUnit('millisecond').format('H:i:s.v')).toEqual('12:00:00.199');
+    });
+
+    test('\'millisecond\' subtracts multiple seconds from the instance', (): void => {
+        expect(Carbon.parse('2024-02-29 12:00:00.500', 'CET').subUnit('millisecond', 500).format('H:i:s.v')).toEqual('12:00:00.000');
+    });
+
+    test('throws an error for an unsupported unit', (): void => {
+        expect(() => Carbon.parse('2024-02-29', 'CET').subUnit('unsupported', 1)).toThrow('Unknown unit.');
+    });
+});
