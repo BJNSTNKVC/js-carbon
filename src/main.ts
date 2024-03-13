@@ -8,7 +8,7 @@ enum DayOfTheWeek {
     Saturday  = 6,
 }
 
-enum Constants {
+enum Constant {
     YearsPerMillennium         = 1000,
     YearsPerCentury            = 100,
     YearsPerDecade             = 10,
@@ -429,7 +429,7 @@ class Carbon {
 
                 // A textual representation of a day, three letters (e.g., Mon through Sun)
                 case 'D':
-                    date += now.toLocaleString('default', { weekday: 'short' });
+                    date += now.toLocaleString('en-US', { weekday: 'short' });
 
                     break;
 
@@ -441,7 +441,7 @@ class Carbon {
 
                 // A full textual representation of the day of the week (e.g., Sunday through Saturday)
                 case 'l':
-                    date += now.toLocaleString('default', { weekday: 'long' });
+                    date += now.toLocaleString('en-US', { weekday: 'long' });
 
                     break;
 
@@ -458,6 +458,7 @@ class Carbon {
 
                     break;
                 }
+
                 // Numeric representation of the day of the week (e.g., 0 (for Sunday) through 6 (for Saturday))
                 case 'w':
                     date += dayOfTheWeek;
@@ -468,9 +469,10 @@ class Carbon {
                 case 'z': {
                     let start: Date          = new Date(year, 0, 0);
                     let diff: number         = ((now as unknown as number) - (start as unknown as number)) + ((start.getTimezoneOffset() - now.getTimezoneOffset()) * 60 * 1000);
-                    let day: number          = Constants.MillisecondsPerDay;
+                    let day: number          = Constant.MillisecondsPerDay;
                     const currentDay: number = Math.floor(diff / day);
-                    date += currentDay - 1;
+
+                    date += currentDay;
 
                     break;
                 }
@@ -482,15 +484,16 @@ class Carbon {
                     parsedDate.setUTCDate(parsedDate.getUTCDate() + 4 - weekDay);
 
                     let yearStart: Date    = new Date(Date.UTC(parsedDate.getUTCFullYear(), 0, 1));
-                    let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / Constants.MillisecondsPerDay) + 1) / Constants.DaysPerWeek);
+                    let weekNumber: number = Math.ceil(((((parsedDate as unknown as number) - (yearStart as unknown as number)) / Constant.MillisecondsPerDay) + 1) / Constant.DaysPerWeek);
 
                     date += weekNumber.toString().padStart(2, '0');
 
                     break;
                 }
+
                 // A full textual representation of a month, such as January or March (e.g., January through December)
                 case 'F':
-                    date += now.toLocaleString('default', { month: 'long' });
+                    date += now.toLocaleString('en-US', { month: 'long' });
 
                     break;
 
@@ -501,9 +504,10 @@ class Carbon {
 
                     break;
                 }
+
                 // A short textual representation of a month, three letters (e.g., Jan through Dec)
                 case 'M':
-                    date += now.toLocaleString('default', { month: 'short' });
+                    date += now.toLocaleString('en-US', { month: 'short' });
 
                     break;
 
@@ -578,10 +582,11 @@ class Carbon {
                     const minutes: number = now.getUTCMinutes();
                     const seconds: number = now.getUTCSeconds();
 
-                    date += Math.floor((((hours + 1) % Constants.HoursPerDay) + minutes / Constants.MinutesPerHour + seconds / Constants.SecondsPerHour) * Constants.MillisecondsPerSecond / Constants.HoursPerDay);
+                    date += Math.floor((((hours + 1) % Constant.HoursPerDay) + minutes / Constant.MinutesPerHour + seconds / Constant.SecondsPerHour) * Constant.MillisecondsPerSecond / Constant.HoursPerDay);
 
                     break;
                 }
+
                 // 12-hour format of an hour without leading zeros (e.g., 1 through 12)
                 case 'g':
                     date += hours > 12 ? hours - 12 : hours;
@@ -645,6 +650,7 @@ class Carbon {
 
                     break;
                 }
+
                 // Difference to Greenwich time (GMT) without colon between hours and minutes (e.g., +0200)
                 case 'O': {
                     const timeZoneData = now.toLocaleDateString('en-us', { timeZoneName: 'longOffset', timeZone: this.#timezone ?? undefined, })
@@ -707,7 +713,7 @@ class Carbon {
                     const hours: number   = parseInt(offset.split(':')[0] as string);
                     const minutes: number = parseInt(offset.split(':')[1] as string);
 
-                    const offsetInSeconds: number = hours * Constants.SecondsPerHour + minutes * Constants.SecondsPerMinute;
+                    const offsetInSeconds: number = hours * Constant.SecondsPerHour + minutes * Constant.SecondsPerMinute;
 
                     date += `${sign}${offsetInSeconds}`;
 
@@ -720,6 +726,7 @@ class Carbon {
 
                     break;
                 }
+
                 // RFC 2822/RFC 5322 formatted date (e.g., Thu, 21 Dec 2000 16:01:07 +0200)
                 case 'r': {
                     date += this.format('D, d M Y H:i:s O');
@@ -729,7 +736,7 @@ class Carbon {
 
                 // Seconds since the Unix Epoch (e.g., January 1, 1970 00:00:00 GMT)
                 case 'U': {
-                    date += Math.floor(now.getTime() / Constants.MillisecondsPerSecond);
+                    date += Math.floor(now.getTime() / Constant.MillisecondsPerSecond);
 
                     break;
                 }
@@ -865,9 +872,7 @@ class Carbon {
      * Determine if the instance is in the same year as the current moment next year.
      */
     isNextYear(): boolean {
-        const now: Carbon = Carbon.now();
-
-        return this.year === now.year + 1;
+        return this.year === this.#resolveCarbon().addYear().year;
     }
 
     /**
@@ -876,9 +881,7 @@ class Carbon {
      * @return { boolean }
      */
     isLastYear(): boolean {
-        const now: Carbon = Carbon.now();
-
-        return this.year === now.year - 1;
+        return this.year === this.#resolveCarbon().subYear().year;
     }
 
     /**
@@ -907,10 +910,7 @@ class Carbon {
      * @returns { boolean }
      */
     isNextMonth(): boolean {
-        const now: Carbon   = Carbon.now();
-        const month: string = (now.month + 1).toString().padStart(2, '0');
-
-        return this.format('Y-m') === `${now.year}-${month}`;
+        return this.format('Y-m') === this.#resolveCarbon().addMonth().format('Y-m');
     }
 
     /**
@@ -919,10 +919,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastMonth(): boolean {
-        const now: Carbon   = Carbon.now();
-        const month: string = (now.month - 1).toString().padStart(2, '0');
-
-        return this.format('Y-m') === `${now.year}-${month}`;
+        return this.format('Y-m') === this.#resolveCarbon().subMonth().format('Y-m');
     }
 
     /**
@@ -951,10 +948,7 @@ class Carbon {
      * @returns { boolean }
      */
     isNextWeek(): boolean {
-        const now: Carbon  = Carbon.now();
-        const week: string = (now.week + 1).toString().padStart(2, '0');
-
-        return this.format('o-W') === `${now.year}-${week}`;
+        return this.format('o-W') === this.#resolveCarbon().addWeek().format('o-W');
     }
 
     /**
@@ -963,10 +957,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastWeek(): boolean {
-        const now: Carbon  = Carbon.now();
-        const week: string = (now.week - 1).toString().padStart(2, '0');
-
-        return this.format('o-W') === `${now.year}-${week}`;
+        return this.format('o-W') === this.#resolveCarbon().subWeek().format('o-W');
     }
 
     /**
@@ -995,24 +986,14 @@ class Carbon {
      * @returns { boolean }
      */
     isNextDay(): boolean {
-        const now: Carbon   = Carbon.now();
-        const year: string  = now.format('Y');
-        const month: string = now.format('m');
-        const day: string   = (now.day + 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d') === `${year}-${month}-${day}`;
+        return this.format('Y-m-d') === this.#resolveCarbon().addDay().format('Y-m-d');
     }
 
     /**
      * Determine if the instance is in the same day as the current moment last day.
      */
     isLastDay(): boolean {
-        const now: Carbon   = Carbon.now();
-        const year: string  = now.format('Y');
-        const month: string = now.format('m');
-        const day: string   = (now.day - 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d') === `${year}-${month}-${day}`;
+        return this.format('Y-m-d') === this.#resolveCarbon().subDay().format('Y-m-d');
     }
 
     /**
@@ -1041,13 +1022,7 @@ class Carbon {
      * @returns { boolean }
      */
     isNextHour(): boolean {
-        const now: Carbon   = Carbon.now();
-        const year: string  = now.format('Y');
-        const month: string = now.format('m');
-        const day: string   = now.format('d');
-        const hour: string  = (now.hour + 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H') === `${year}-${month}-${day} ${hour}`;
+        return this.format('Y-m-d H') === this.#resolveCarbon().addHour().format('Y-m-d H');
     }
 
     /**
@@ -1056,13 +1031,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastHour(): boolean {
-        const now: Carbon   = Carbon.now();
-        const year: string  = now.format('Y');
-        const month: string = now.format('m');
-        const day: string   = now.format('d');
-        const hour: string  = (now.hour - 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H') === `${year}-${month}-${day} ${hour}`;
+        return this.format('Y-m-d H') === this.#resolveCarbon().subHour().format('Y-m-d H');
     }
 
     /**
@@ -1091,14 +1060,7 @@ class Carbon {
      * @return { boolean }
      */
     isNextMinute(): boolean {
-        const now: Carbon    = Carbon.now();
-        const year: string   = now.format('Y');
-        const month: string  = now.format('m');
-        const day: string    = now.format('d');
-        const hour: string   = now.format('H');
-        const minute: string = (now.minute + 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H:i') === `${year}-${month}-${day} ${hour}:${minute}`;
+        return this.format('Y-m-d H:i') === this.#resolveCarbon().addMinute().format('Y-m-d H:i');
     }
 
     /**
@@ -1107,14 +1069,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastMinute(): boolean {
-        const now: Carbon    = Carbon.now();
-        const year: string   = now.format('Y');
-        const month: string  = now.format('m');
-        const day: string    = now.format('d');
-        const hour: string   = now.format('H');
-        const minute: string = (now.minute - 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H:i') === `${year}-${month}-${day} ${hour}:${minute}`;
+        return this.format('Y-m-d H:i') === this.#resolveCarbon().subMinute().format('Y-m-d H:i');
     }
 
     /**
@@ -1143,15 +1098,7 @@ class Carbon {
      * @returns { boolean }
      */
     isNextSecond(): boolean {
-        const now: Carbon    = Carbon.now();
-        const year: string   = now.format('Y');
-        const month: string  = now.format('m');
-        const day: string    = now.format('d');
-        const hour: string   = now.format('H');
-        const minute: string = now.format('i');
-        const second: string = (now.second + 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H:i:s') === `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        return this.format('Y-m-d H:i:s') === this.#resolveCarbon().addSecond().format('Y-m-d H:i:s');
     }
 
     /**
@@ -1160,15 +1107,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastSecond(): boolean {
-        const now: Carbon    = Carbon.now();
-        const year: string   = now.format('Y');
-        const month: string  = now.format('m');
-        const day: string    = now.format('d');
-        const hour: string   = now.format('H');
-        const minute: string = now.format('i');
-        const second: string = (now.second - 1).toString().padStart(2, '0');
-
-        return this.format('Y-m-d H:i:s') === `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        return this.format('Y-m-d H:i:s') === this.#resolveCarbon().subSecond().format('Y-m-d H:i:s');
     }
 
     /**
@@ -1197,16 +1136,7 @@ class Carbon {
      * @returns { boolean }
      */
     isNextMillisecond(): boolean {
-        const now                 = Carbon.now();
-        const year                = now.format('Y');
-        const month               = now.format('m');
-        const day                 = now.format('d');
-        const hour                = now.format('H');
-        const minute              = now.format('m');
-        const second              = now.format('s');
-        const millisecond: string = (now.millisecond + 1).toString().padEnd(3, '0');
-
-        return this.format('Y-m-d H:i:s.v') === `${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}`;
+        return this.format('Y-m-d H:i:s.v') === this.#resolveCarbon().addMillisecond().format('Y-m-d H:i:s.v');
     }
 
     /**
@@ -1215,16 +1145,7 @@ class Carbon {
      * @returns { boolean }
      */
     isLastMillisecond(): boolean {
-        const now                 = Carbon.now();
-        const year                = now.format('Y');
-        const month               = now.format('m');
-        const day                 = now.format('d');
-        const hour                = now.format('H');
-        const minute              = now.format('m');
-        const second              = now.format('s');
-        const millisecond: string = (now.millisecond - 1).toString().padEnd(3, '0');
-
-        return this.format('Y-m-d H:i:s.v') === `${year}-${month}-${day} ${hour}:${minute}:${second}.${millisecond}`;
+        return this.format('Y-m-d H:i:s.v') === this.#resolveCarbon().subMillisecond().format('Y-m-d H:i:s.v');
     }
 
     /**
@@ -1263,6 +1184,158 @@ class Carbon {
      */
     isLastMicrosecond(): boolean {
         throw new Error('isLastMicrosecond method is not supported.');
+    }
+
+    /**
+     * Determine if the given date is in the same quarter as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameQuarter(date: Carbon | Date | string | null = null): boolean {
+        return this.quarter === this.#resolveCarbon(date).quarter;
+    }
+
+    /**
+     * Determine if the instance is in the same quarter as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentQuarter(): boolean {
+        return this.quarter === this.#resolveCarbon(new Date).quarter;
+    }
+
+    /**
+     * Determine if the instance is in the same quarter as the current moment next quarter.
+     *
+     * @returns { boolean }
+     */
+    isNextQuarter(): boolean {
+        return this.quarter === this.#resolveCarbon().addQuarter().quarter;
+    }
+
+    /**
+     * Determine if the instance is in the same quarter as the current moment last quarter.
+     *
+     * @returns { boolean }
+     */
+    isLastQuarter(): boolean {
+        return this.quarter === this.#resolveCarbon().subQuarter().quarter;
+    }
+
+    /**
+     * Determine if the given date is in the same decade as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameDecade(date: Carbon | Date | string | null = null): boolean {
+        return this.decade === this.#resolveCarbon(date).decade;
+    }
+
+    /**
+     * Determine if the instance is in the same decade as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentDecade(): boolean {
+        return this.decade === this.#resolveCarbon(new Date).decade;
+    }
+
+    /**
+     * Determine if the instance is in the same decade as the current moment next decade.
+     *
+     * @returns { boolean }
+     */
+    isNextDecade(): boolean {
+        return this.decade === this.#resolveCarbon().addDecade().decade;
+    }
+
+    /**
+     * Determine if the instance is in the same decade as the current moment last decade.
+     *
+     * @returns { boolean }
+     */
+    isLastDecade(): boolean {
+        return this.decade === this.#resolveCarbon().subDecade().decade;
+    }
+
+    /**
+     * Determine if the given date is in the same century as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameCentury(date: Carbon | Date | string | null = null): boolean {
+        return this.century === this.#resolveCarbon(date).century;
+    }
+
+    /**
+     * Determine if the instance is in the same century as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentCentury(): boolean {
+        return this.century === this.#resolveCarbon(new Date).century;
+    }
+
+    /**
+     * Determine if the instance is in the same century as the current moment next century.
+     *
+     * @returns { boolean }
+     */
+    isNextCentury(): boolean {
+        return this.century === this.#resolveCarbon().addCentury().century;
+    }
+
+    /**
+     * Determine if the instance is in the same century as the current moment last century.
+     *
+     * @returns { boolean }
+     */
+    isLastCentury(): boolean {
+        return this.century === this.#resolveCarbon().subCentury().century;
+    }
+
+    /**
+     * Determine if the given date is in the same millennium as the instance. If null passed, compare to now (with the same timezone).
+     *
+     * @param { Carbon | Date | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isSameMillennium(date: Carbon | Date | string | null = null): boolean {
+        return this.millennium === this.#resolveCarbon(date).millennium;
+    }
+
+    /**
+     * Determine if the instance is in the same millennium as the current moment.
+     *
+     * @returns { boolean }
+     */
+    isCurrentMillennium(): boolean {
+        return this.millennium === this.#resolveCarbon(new Date).millennium;
+    }
+
+    /**
+     * Determine if the instance is in the same millennium as the current moment next millennium.
+     *
+     * @returns { boolean }
+     */
+    isNextMillennium(): boolean {
+        return this.millennium === this.#resolveCarbon().addMillennium().millennium;
+    }
+
+    /**
+     * Determine if the instance is in the same millennium as the current moment last millennium.
+     *
+     * @returns { boolean }
+     */
+    isLastMillennium(): boolean {
+        return this.millennium === this.#resolveCarbon().subMillennium().millennium;
     }
 
     /**
@@ -1591,7 +1664,7 @@ class Carbon {
      * @returns { Date }
      */
     toDate(): Date {
-        return new Date(new Date().toLocaleString('en-US', { timeZone: this.#timezone ?? undefined }));
+        return new Date(this.#date.toLocaleString('en-US', { timeZone: this.#timezone ?? undefined }));
     }
 
     /**
@@ -1610,7 +1683,7 @@ class Carbon {
      *
      * @returns { string | number }
      */
-    get(value: CarbonGetters): number | string | boolean {
+    get(value: CarbonGetter): number | string | boolean {
         switch (value) {
             case 'year': {
                 return parseInt(this.format('Y'));
@@ -1620,7 +1693,7 @@ class Carbon {
                 return parseInt(this.format('n'));
             }
 
-            case 'week' : {
+            case 'week': {
                 return parseInt(this.format('W'));
             }
 
@@ -1661,11 +1734,11 @@ class Carbon {
             }
 
             case 'quarter': {
-                return Math.ceil(this.get('month') as number / Constants.MonthsPerQuarter);
+                return Math.ceil(this.get('month') as number / Constant.MonthsPerQuarter);
             }
 
             case 'decade': {
-                return Math.ceil(this.get('year') as number / Constants.YearsPerDecade);
+                return Math.ceil(this.get('year') as number / Constant.YearsPerDecade);
             }
 
             case 'century': {
@@ -1677,7 +1750,7 @@ class Carbon {
                     factor = -1;
                 }
 
-                return factor * Math.ceil(year / Constants.YearsPerCentury);
+                return factor * Math.ceil(year / Constant.YearsPerCentury);
             }
 
             case 'millennium': {
@@ -1689,7 +1762,7 @@ class Carbon {
                     factor = -1;
                 }
 
-                return factor * Math.ceil(year / Constants.YearsPerMillennium);
+                return factor * Math.ceil(year / Constant.YearsPerMillennium);
             }
 
             case 'offset': {
@@ -1701,11 +1774,11 @@ class Carbon {
             }
 
             case 'local': {
-                return parseInt(this.format('Z')) / Constants.SecondsPerMinute === this.#date.getTimezoneOffset() * -1;
+                return parseInt(this.format('Z')) / Constant.SecondsPerMinute === this.#date.getTimezoneOffset() * -1;
             }
 
             case 'utc': {
-                return parseInt(this.format('Z')) / Constants.SecondsPerHour === 0;
+                return parseInt(this.format('Z')) / Constant.SecondsPerHour === 0;
             }
 
             case 'timezone': {
@@ -1715,6 +1788,677 @@ class Carbon {
             default:
                 throw new Error(`Unknown getter.`);
         }
+    }
+
+    /**
+     * Set current instance year to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setYear(value: number): Carbon {
+        return this.setUnit('year', value);
+    }
+
+    /**
+     * Set current instance month to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setMonth(value: number): Carbon {
+        return this.setUnit('month', value);
+    }
+
+    /**
+     * Set current instance day to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setDay(value: number): Carbon {
+        return this.setUnit('day', value);
+    }
+
+    /**
+     * Set current instance hour to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setHour(value: number): Carbon {
+        return this.setUnit('hour', value);
+    }
+
+    /**
+     * Set current instance minute to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setMinute(value: number): Carbon {
+        return this.setUnit('minute', value);
+    }
+
+    /**
+     * Set current instance second to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setSecond(value: number): Carbon {
+        return this.setUnit('second', value);
+    }
+
+    /**
+     * Set current instance millisecond to the given value.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    setMillisecond(value: number): Carbon {
+        return this.setUnit('millisecond', value);
+    }
+
+    /**
+     * Set the date with gregorian year, month and day numbers.
+     *
+     * @param { number } year
+     * @param { number } month
+     * @param { number } day
+     *
+     * @returns { Carbon }
+     */
+    setDate(year: number, month: number, day: number): Carbon {
+        this.#date.setFullYear(year);
+        this.#date.setMonth(month);
+        this.#date.setDate(day);
+
+        return Carbon.parse(this.#date.toISOString());
+    }
+
+    /**
+     * Resets the current time of the Carbon object to a different time.
+     *
+     * @param { number } hour
+     * @param { number } minute
+     * @param { number } second
+     * @param { number } millisecond
+     *
+     * @returns { Carbon }
+     */
+    setTime(hour: number, minute: number, second: number, millisecond: number): Carbon {
+        this.#date.setHours(hour);
+        this.#date.setMinutes(minute);
+        this.#date.setSeconds(second);
+        this.#date.setMilliseconds(millisecond);
+
+        return Carbon.parse(this.#date.toISOString());
+    }
+
+    /**
+     * Set specified unit to new given value.
+     *
+     * @param { string } unit
+     * @param { number | null } value
+     *
+     * @returns { Carbon }
+     */
+    setUnit(unit: DateUnit, value: number | null = null): Carbon {
+        const dateUnits: string[] = ['year', 'month', 'day'];
+        const timeUnits: string[] = ['hour', 'minute', 'second', 'millisecond'];
+
+        if (dateUnits.includes(unit)) {
+            const [year, month, day]: number[] = dateUnits.map((name: string): number => {
+                if (name === unit) {
+                    return value as number;
+                }
+
+                return this.get(name as CarbonGetter) as number;
+            });
+
+            return this.setDate(year as number, month as number - 1, day as number);
+        }
+
+        const [hour, minute, second, millisecond]: number[] = timeUnits.map((name: string): number => {
+            if (name === unit) {
+                return value as number;
+            }
+
+            return this.get(name as CarbonGetter) as number;
+        });
+
+        return this.setTime(hour as number, minute as number, second as number, millisecond as number);
+    }
+
+    /**
+     * Add one year to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addYear(): Carbon {
+        return this.addUnit('year', 1);
+    }
+
+    /**
+     * Add years to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addYears(value: number = 1): Carbon {
+        return this.addUnit('year', value);
+    }
+
+    /**
+     * Add month to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addMonth(): Carbon {
+        return this.addUnit('month', 1);
+    }
+
+    /**
+     * Add months to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addMonths(value: number = 1): Carbon {
+        return this.addUnit('month', value);
+    }
+
+    /**
+     * Add day to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addDay(): Carbon {
+        return this.addUnit('day', 1);
+    }
+
+    /**
+     * Add days to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addDays(value: number = 1): Carbon {
+        return this.addUnit('day', value);
+    }
+
+    /**
+     * Add hour to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addHour(): Carbon {
+        return this.addUnit('hour', 1);
+    }
+
+    /**
+     * Add hour to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addHours(value: number = 1): Carbon {
+        return this.addUnit('hour', value);
+    }
+
+    /**
+     * Add minute to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addMinute(): Carbon {
+        return this.addUnit('minute', 1);
+    }
+
+    /**
+     * Add minutes to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addMinutes(value: number = 1): Carbon {
+        return this.addUnit('minute', value);
+    }
+
+    /**
+     * Add second to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addSecond(): Carbon {
+        return this.addUnit('second', 1);
+    }
+
+    /**
+     * Add seconds to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addSeconds(value: number = 1): Carbon {
+        return this.addUnit('second', value);
+    }
+
+    /**
+     * Add millisecond to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addMillisecond(): Carbon {
+        return this.addUnit('millisecond', 1);
+    }
+
+    /**
+     * Add milliseconds to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addMilliseconds(value: number = 1): Carbon {
+        return this.addUnit('millisecond', value);
+    }
+
+    /**
+     * Add millennium to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addMillennium(): Carbon {
+        return this.addUnit('millennium', 1);
+    }
+
+    /**
+     * Add millenniums to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addMillenniums(value: number = 1): Carbon {
+        return this.addUnit('millennium', value);
+    }
+
+    /**
+     * Add century to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addCentury(): Carbon {
+        return this.addUnit('century', 1);
+    }
+
+    /**
+     * Add centuries to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addCenturies(value: number = 1): Carbon {
+        return this.addUnit('century', value);
+    }
+
+    /**
+     * Add decade to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addDecade(): Carbon {
+        return this.addUnit('decade', 1);
+    }
+
+    /**
+     * Add decades to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addDecades(value: number = 1): Carbon {
+        return this.addUnit('decade', value);
+    }
+
+    /**
+     * Add quarter to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addQuarter(): Carbon {
+        return this.addUnit('quarter', 1);
+    }
+
+    /**
+     * Add quarters to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addQuarters(value: number = 1): Carbon {
+        return this.addUnit('quarter', value);
+    }
+
+    /**
+     * Add week to the instance.
+     *
+     * @returns { Carbon }
+     */
+    addWeek(): Carbon {
+        return this.addUnit('week', 1);
+    }
+
+    /**
+     * Add weeks to the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    addWeeks(value: number = 1): Carbon {
+        return this.addUnit('week', value);
+    }
+
+    /**
+     * Subtract one year from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subYear(): Carbon {
+        return this.subUnit('year', 1);
+    }
+
+    /**
+     * Subtract years from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subYears(value: number = 1): Carbon {
+        return this.subUnit('year', value);
+    }
+
+    /**
+     * Subtract month from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subMonth(): Carbon {
+        return this.subUnit('month', 1);
+    }
+
+    /**
+     * Subtract months from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subMonths(value: number = 1): Carbon {
+        return this.subUnit('month', value);
+    }
+
+    /**
+     * Subtract day from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subDay(): Carbon {
+        return this.subUnit('day', 1);
+    }
+
+    /**
+     * Subtract days from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subDays(value: number = 1): Carbon {
+        return this.subUnit('day', value);
+    }
+
+    /**
+     * Subtract hour from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subHour(): Carbon {
+        return this.subUnit('hour', 1);
+    }
+
+    /**
+     * Subtract hour from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subHours(value: number = 1): Carbon {
+        return this.subUnit('hour', value);
+    }
+
+    /**
+     * Subtract minute from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subMinute(): Carbon {
+        return this.subUnit('minute', 1);
+    }
+
+    /**
+     * Subtract minutes from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subMinutes(value: number = 1): Carbon {
+        return this.subUnit('minute', value);
+    }
+
+    /**
+     * Subtract second from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subSecond(): Carbon {
+        return this.subUnit('second', 1);
+    }
+
+    /**
+     * Subtract seconds from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subSeconds(value: number = 1): Carbon {
+        return this.subUnit('second', value);
+    }
+
+    /**
+     * Subtract millisecond from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subMillisecond(): Carbon {
+        return this.subUnit('millisecond', 1);
+    }
+
+    /**
+     * Subtract milliseconds from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subMilliseconds(value: number = 1): Carbon {
+        return this.subUnit('millisecond', value);
+    }
+
+    /**
+     * Subtract millennium from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subMillennium(): Carbon {
+        return this.subUnit('millennium', 1);
+    }
+
+    /**
+     * Subtract millenniums from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subMillenniums(value: number = 1): Carbon {
+        return this.subUnit('millennium', value);
+    }
+
+    /**
+     * Subtract century from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subCentury(): Carbon {
+        return this.subUnit('century', 1);
+    }
+
+    /**
+     * Subtract centuries from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subCenturies(value: number = 1): Carbon {
+        return this.subUnit('century', value);
+    }
+
+    /**
+     * Subtract decade from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subDecade(): Carbon {
+        return this.subUnit('decade', 1);
+    }
+
+    /**
+     * Subtract decades from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subDecades(value: number = 1): Carbon {
+        return this.subUnit('decade', value);
+    }
+
+    /**
+     * Subtract quarter from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subQuarter(): Carbon {
+        return this.subUnit('quarter', 1);
+    }
+
+    /**
+     * Subtract quarters from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subQuarters(value: number = 1): Carbon {
+        return this.subUnit('quarter', value);
+    }
+
+    /**
+     * Subtract week from the instance.
+     *
+     * @returns { Carbon }
+     */
+    subWeek(): Carbon {
+        return this.subUnit('week', 1);
+    }
+
+    /**
+     * Subtract weeks from the instance.
+     *
+     * @param { number } value
+     *
+     * @returns { Carbon }
+     */
+    subWeeks(value: number = 1): Carbon {
+        return this.subUnit('week', value);
+    }
+
+    /**
+     * Add given units to the current instance.
+     *
+     * @param { string } unit
+     * @param { number | null } value
+     *
+     * @returns { Carbon }
+     */
+    addUnit(unit: DateUnit | MetaUnit, value: number = 1): Carbon | any {
+        const metaUnits: { [key: string]: (number | string)[] } = {
+            'millennium': [Constant.YearsPerMillennium, 'year'],
+            'century'   : [Constant.YearsPerCentury, 'year'],
+            'decade'    : [Constant.YearsPerDecade, 'year'],
+            'quarter'   : [Constant.MonthsPerQuarter, 'month'],
+            'week'      : [Constant.DaysPerWeek, 'day']
+        };
+
+        if (metaUnits[unit]) {
+            const factor: number = (metaUnits[unit])![0] as number;
+            unit                 = (metaUnits[unit])![1] as DateUnit | MetaUnit;
+
+            value = value * factor;
+        }
+
+        try {
+            return this.setUnit(unit as DateUnit, this.get(unit as CarbonGetter) as number + value);
+        } catch (exception) {
+            throw Error(`Unknown unit.`);
+        }
+    }
+
+    /**
+     * Subtract given units to the current instance.
+     *
+     * @param { string } unit
+     * @param { number | null } value
+     *
+     * @return static
+     */
+    subUnit(unit: DateUnit | MetaUnit, value: number = 1) {
+        return this.addUnit(unit, -value);
     }
 }
 
