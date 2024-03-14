@@ -52,6 +52,7 @@ class Carbon {
      * Standard to represent date and time information in XML feeds.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #ATOM: string = 'Y-m-d\\TH:i:sP';
@@ -60,6 +61,7 @@ class Carbon {
      * Standard to represent date and time information in Cookies.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #COOKIE: string = 'l, d-M-Y H:i:s T';
@@ -68,6 +70,7 @@ class Carbon {
      * International standard covering the worldwide exchange and communication of date and time-related data.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #ISO8601: string = 'Y-m-d\\TH:i:sO';
@@ -76,6 +79,7 @@ class Carbon {
      * Expanded international standard covering the worldwide exchange and communication of date and time-related data.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #ISO8601_EXPANDED: string = 'X-m-d\\TH:i:sP';
@@ -84,6 +88,7 @@ class Carbon {
      * Standard for the Format of Arpa Internet Text Messages.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC822: string = 'D, d M y H:i:s O';
@@ -92,6 +97,7 @@ class Carbon {
      * Standard for Interchange of USENET Messages. (June 1983)
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC850: string = 'l, d-M-y H:i:s T';
@@ -100,6 +106,7 @@ class Carbon {
      * Standard for Interchange of USENET Messages. (December 1987)
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC1036: string = 'D, d M y H:i:s O';
@@ -108,6 +115,7 @@ class Carbon {
      * Standard to represent date and time information in Internet protocols.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC1123: string = 'D, d M Y H:i:s O';
@@ -116,6 +124,7 @@ class Carbon {
      * Standard for Internet Message Format.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC2822: string = 'D, d M Y H:i:s O';
@@ -124,6 +133,7 @@ class Carbon {
      * Standard for Date and Time on the Internet.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC3339: string = 'Y-m-d\\TH:i:sP';
@@ -132,6 +142,7 @@ class Carbon {
      * Extended standard for Date and Time on the Internet.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC3339_EXTENDED: string = 'Y-m-d\\TH:i:s.vP';
@@ -140,6 +151,7 @@ class Carbon {
      * Standard to represent date and time information in Hypertext Transfer Protocol.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RFC7231: string = 'D, d M Y H:i:s \\G\\M\\T';
@@ -148,6 +160,7 @@ class Carbon {
      * Standard to represent date and time information in RSS feeds.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #RSS: string = 'D, d M Y H:i:s O';
@@ -156,6 +169,7 @@ class Carbon {
      * Standard to represent date and time information in a machine-readable and unambiguous manner.
      *
      * @private
+     *
      * @type { string }
      */
     readonly #W3C: string = 'Y-m-d\\TH:i:sP';
@@ -164,6 +178,7 @@ class Carbon {
      * A date/time string.
      *
      * @private
+     *
      * @type { string }
      */
     date: string;
@@ -1679,11 +1694,11 @@ class Carbon {
     /**
      * Get a part of the Carbon object.
      *
-     * @params { string } value
+     * @param { string } value
      *
-     * @returns { string | number }
+     * @returns { string | number | boolean }
      */
-    get(value: CarbonGetter): number | string | boolean {
+    get(value: CarbonGetter): string | number | boolean {
         switch (value) {
             case 'year': {
                 return parseInt(this.format('Y'));
@@ -2426,7 +2441,7 @@ class Carbon {
      *
      * @returns { Carbon }
      */
-    addUnit(unit: DateUnit | MetaUnit, value: number = 1): Carbon | any {
+    addUnit(unit: DateUnit | MetaUnit, value: number = 1): Carbon {
         const metaUnits: { [key: string]: (number | string)[] } = {
             'millennium': [Constant.YearsPerMillennium, 'year'],
             'century'   : [Constant.YearsPerCentury, 'year'],
