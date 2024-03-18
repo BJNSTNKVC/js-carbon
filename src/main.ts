@@ -597,7 +597,9 @@ class Carbon {
                     const minutes: number = now.getUTCMinutes();
                     const seconds: number = now.getUTCSeconds();
 
-                    date += Math.floor((((hours + 1) % Constant.HoursPerDay) + minutes / Constant.MinutesPerHour + seconds / Constant.SecondsPerHour) * Constant.MillisecondsPerSecond / Constant.HoursPerDay);
+                    date += Math.floor((((hours + 1) % Constant.HoursPerDay) + minutes / Constant.MinutesPerHour + seconds / Constant.SecondsPerHour) * Constant.MillisecondsPerSecond / Constant.HoursPerDay)
+                        .toString()
+                        .padStart(3, '0');
 
                     break;
                 }
@@ -2472,7 +2474,7 @@ class Carbon {
      *
      * @return static
      */
-    subUnit(unit: DateUnit | MetaUnit, value: number = 1) {
+    subUnit(unit: DateUnit | MetaUnit, value: number = 1): Carbon {
         return this.addUnit(unit, -value);
     }
 }
