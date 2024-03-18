@@ -3236,3 +3236,50 @@ const carbon = Carbon.parse('2024-03-29 12:45:00').subWeeks(4);
 
 console.log(carbon); // 2024-03-01 12:45:00
 ```
+
+### Chaining Method Calls
+
+You can chain multiple `set`, `add` or `sub` methods together to conveniently update multiple components of a `Carbon` instance in one
+line.
+
+#### Example
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00')
+    .setYear(2025)
+    .setMonth(5)
+    .setDay(15)
+    .setHour(18)
+    .setMinute(30)
+    .setSecond(45)
+    .setMillisecond(500);
+
+console.log(carbon); // 2025-06-15 18:30:45.500 UTC (+02:00)
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00')
+    .addYears(2)
+    .addMonths(3)
+    .addDays(5)
+    .addHours(10)
+    .addMinutes(30)
+    .addSeconds(20)
+    .addMilliseconds(500);
+
+console.log(carbon); // 2026-06-06 23:15:20.500 UTC (+02:00)
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00')
+    .subYears(2)
+    .subMonths(3)
+    .subDays(5)
+    .subHours(10)
+    .subMinutes(30)
+    .subSeconds(20)
+    .subMilliseconds(500);
+
+console.log(carbon); // 2021-11-26 02:14:39.500 UTC (+01:00)
+```
+
