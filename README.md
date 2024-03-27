@@ -23,6 +23,7 @@ import { Carbon } from '@bjnstnkvc/carbon';
 You can install the package via jsDelivr CDN:
 
 ```html
+
 <script src="https://cdn.jsdelivr.net/npm/@bjnstnkvc/carbon/lib/main.min.js"></script>
 ```
 
@@ -75,6 +76,90 @@ const carbon = Carbon.now();
 const carbon = Carbon.now('UTC');
 ```
 
+#### today
+
+Get a Carbon instance for today.
+
+##### Parameters
+
+- **timezone** *(optional)* - A string representing the timezone. Defaults to `null`.
+
+##### Returns
+
+A Carbon instance representing today's date.
+
+##### Example
+
+```javascript
+const carbon = Carbon.today();
+
+console.log(carbon); // 2024-03-14 01:00:00.000 UTC (+01:00)
+````
+
+```javascript
+const carbon = Carbon.today('UTC');
+
+console.log(carbon); // 2024-03-14 00:00:00.000 UTC (+00:00)
+````
+
+> **Note:** This example assumes the current date is 2024-03-24.
+
+#### tomorrow
+
+Get a Carbon instance for tomorrow.
+
+##### Parameters
+
+- **timezone** *(optional)* - A string representing the timezone. Defaults to `null`.
+
+##### Returns
+
+A Carbon instance representing tomorrow's date.
+
+##### Example
+
+```javascript
+const carbon = Carbon.tomorrow();
+
+console.log(carbon); // 2024-03-15 00:00:00.000 UTC (+01:00)
+````
+
+```javascript
+const carbon = Carbon.tomorrow('UTC');
+
+console.log(carbon); // 2024-03-15 00:00:00.000 UTC (+00:00)
+````
+
+> **Note:** This example assumes the current date is 2024-03-24.
+
+#### yesterday
+
+Get a Carbon instance for yesterday.
+
+##### Parameters
+
+- **timezone** *(optional)* - A string representing the timezone. Defaults to `null`.
+
+##### Returns
+
+A Carbon instance representing yesterday's date.
+
+##### Example
+
+```javascript
+const carbon = Carbon.yesterday();
+
+console.log(carbon); // 2024-03-13 00:00:00.000 UTC (+01:00)
+````
+
+```javascript
+const carbon = Carbon.yesterday('UTC');
+
+console.log(carbon); // 2024-03-13 00:00:00.000 UTC (+00:00)
+````
+
+> **Note:** This example assumes the current date is 2024-03-24.
+
 #### parse
 
 Parse the date.
@@ -100,7 +185,8 @@ console.log(carbon); // 2024-03-14 00:00:00.000 UTC (+00:00)
 
 ### Formatting
 
-Effortlessly format dates and times according to your preferred style and locale with Carbon's flexible formatting options.
+Effortlessly format dates and times according to your preferred style and locale with Carbon's flexible formatting
+options.
 
 #### format
 
@@ -665,13 +751,13 @@ Determines if the instance's date and time is valid.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-03-14');
+const carbon = Carbon.parse('2024-03-14');
 
 console.log(carbon.isValid()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('invalid date');
+const carbon = Carbon.parse('invalid date');
 
 console.log(carbon.isValid()); // false
 ```
@@ -683,15 +769,33 @@ Determines if the instance's date and time is in daylight saving time.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-07-14');
+const carbon = Carbon.parse('2024-07-14');
 
 console.log(carbon.isDst()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-03-14');
+const carbon = Carbon.parse('2024-03-14');
 
 console.log(carbon.isDst()); // false
+```
+
+#### isLeapYear
+
+Determines if the instance is a leap year.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isLeapYear()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2023-03-14');
+
+console.log(carbon.isLeapYear()); // false
 ```
 
 #### isMonday
@@ -701,13 +805,13 @@ Determines if the instance's day is Monday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-01');
+const carbon = Carbon.parse('2024-01-01');
 
 console.log(carbon.isMonday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-02');
+const carbon = Carbon.parse('2024-01-02');
 
 console.log(carbon.isMonday()); // false
 ```
@@ -719,13 +823,13 @@ Determines if the instance's day is Tuesday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-02');
+const carbon = Carbon.parse('2024-01-02');
 
 console.log(carbon.isTuesday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-03');
+const carbon = Carbon.parse('2024-01-03');
 
 console.log(carbon.isTuesday()); // false
 ```
@@ -737,13 +841,13 @@ Determines if the instance's day is Wednesday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-03');
+const carbon = Carbon.parse('2024-01-03');
 
 console.log(carbon.isWednesday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-04');
+const carbon = Carbon.parse('2024-01-04');
 
 console.log(carbon.isWednesday()); // false
 ```
@@ -755,13 +859,13 @@ Determines if the instance's day is Thursday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-04');
+const carbon = Carbon.parse('2024-01-04');
 
 console.log(carbon.isThursday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-05');
+const carbon = Carbon.parse('2024-01-05');
 
 console.log(carbon.isThursday()); // false
 ```
@@ -773,13 +877,13 @@ Determines if the instance's day is Friday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-05');
+const carbon = Carbon.parse('2024-01-05');
 
 console.log(carbon.isFriday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-06');
+const carbon = Carbon.parse('2024-01-06');
 
 console.log(carbon.isFriday()); // false
 ```
@@ -791,13 +895,13 @@ Determines if the instance's day is Saturday.
 ##### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-06');
+const carbon = Carbon.parse('2024-01-06');
 
 console.log(carbon.isSaturday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-07');
+const carbon = Carbon.parse('2024-01-07');
 
 console.log(carbon.isSaturday()); // false
 ```
@@ -809,15 +913,258 @@ Determines if the instance's day is Sunday.
 ###### Examples
 
 ```javascript
-const carbon = new Carbon('2024-01-07');
+const carbon = Carbon.parse('2024-01-07');
 
 console.log(carbon.isSunday()); // true
 ```
 
 ```javascript
-const carbon = new Carbon('2024-01-08');
+const carbon = Carbon.parse('2024-01-08');
 
 console.log(carbon.isSunday()); // false
+```
+
+#### isWeekday
+
+Determines if the instance is a weekday.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isWeekday()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-17');
+
+console.log(carbon.isWeekday()); // false
+```
+
+#### isWeekend
+
+Determines if the instance is a weekend day.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-16');
+
+console.log(carbon.isWeekend()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isWeekend()); // false
+```
+
+#### isYesterday
+
+Determines if the instance is yesterday.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isYesterday()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-15');
+
+console.log(carbon.isYesterday()); // false
+```
+
+> **Note:** These examples assume that "today" is 2024-03-15.
+
+#### isToday
+
+Determines if the instance is today.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-15');
+
+console.log(carbon.isToday()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isToday()); // false
+```
+
+> **Note:** These examples assume that "today" is 2024-03-15.
+
+#### isTomorrow
+
+Determines if the instance is tomorrow.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-16');
+
+console.log(carbon.isTomorrow()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-15');
+
+console.log(carbon.isTomorrow()); // false
+```
+
+> **Note:** These examples assume that "today" is 2024-03-15.
+
+#### isDayOfWeek
+
+Determines if the instance is a specific day of the week.
+
+##### Parameters
+
+- **day** - The day of the week as number or string. Property is case-insensitive when provided as a string.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isDayOfWeek('thursday')); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14');
+
+console.log(carbon.isDayOfWeek(2)); // false
+```
+
+#### isBirthday
+
+Determines if the instance is the birthday, comparing only the month and day.
+
+##### Parameters
+
+- **date** *(optional)* - The date to compare against, which can be a `Carbon` instance, a string date, or `null`.
+  Defaults to `null`.
+
+##### Examples
+
+```javascript
+const carbon   = Carbon.parse('2024-03-14');
+const birthday = Carbon.parse('2000-03-14');
+
+console.log(carbon.isBirthday(birthday)); // true
+```
+
+```javascript
+const carbon   = Carbon.parse('2024-03-14');
+const birthday = Carbon.parse('1995-04-22');
+
+console.log(carbon.isBirthday(birthday)); // false
+```
+
+#### isLastOfMonth
+
+Determines if today is the last day of the month.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-02-29');
+
+console.log(carbon.isLastOfMonth()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-02-28');
+
+console.log(carbon.isLastOfMonth()); // false
+```
+
+#### isStartOfDay
+
+Determines if the instance is at the start of the day.
+
+##### Parameters
+
+- **checkMilliseconds** *(optional)* - A boolean indicating whether to include milliseconds in the check. Defaults
+  to `false`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 00:00:00');
+
+console.log(carbon.isStartOfDay()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 00:00:00.001');
+
+console.log(carbon.isStartOfDay(true)); // false
+```
+
+#### isEndOfDay
+
+Determines if the instance is at the end of the day.
+
+##### Parameters
+
+- **checkMilliseconds** *(optional)* - A boolean indicating whether to include milliseconds in the check. Defaults
+  to `false`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 23:59:59');
+
+console.log(carbon.isEndOfDay()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 23:59:59.999');
+
+console.log(carbon.isEndOfDay(true)); // true
+```
+
+#### isMidnight
+
+Determines if the instance is midnight.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 00:00:00');
+
+console.log(carbon.isMidnight()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 12:00:00');
+
+console.log(carbon.isMidnight()); // false
+```
+
+#### isMidday
+
+Determines if the instance is midday.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 12:00:00');
+
+console.log(carbon.isMidday()); // true
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-14 11:59:59');
+
+console.log(carbon.isMidday()); // false
 ```
 
 #### isSameAs
@@ -850,7 +1197,7 @@ console.log(carbon.isSameAs('Y-m-d H:i:s', date)); // false
 const carbon = Carbon.parse('2024-03-10', 'CET');
 const date   = Carbon.parse('2024-12-25', 'CET');
 
-console.log(carbon.isSameAs('YYYY', date)); // true
+console.log(carbon.isSameAs('Y', date)); // true
 ```
 
 ```javascript
@@ -1933,7 +2280,8 @@ console.log(now.isLastMillennium()); // false
 
 ### Getters
 
-Retrieve specific components of a date or time, such as year, month, day, hour, minute, and second, effortlessly with Carbon's getter functions.
+Retrieve specific components of a date or time, such as year, month, day, hour, minute, and second, effortlessly with
+Carbon's getter functions.
 
 #### get
 
@@ -2049,6 +2397,16 @@ Get the day of the year (1-365/366).
 const carbon = Carbon.parse('2024-03-16').get('dayOfYear');
 
 console.log(carbon); // 76
+```
+
+###### daysInMonth
+
+Get the number of days in the given month.
+
+```javascript
+const carbon = Carbon.parse('2024-02').get('daysInMonth');
+
+console.log(carbon); // 29
 ```
 
 ###### quarter
@@ -3258,7 +3616,8 @@ console.log(carbon); // 2024-03-01 12:45:00
 
 #### Chaining Method Calls
 
-You can chain multiple `set`, `add` or `sub` methods together to conveniently update multiple components of a `Carbon` instance in one
+You can chain multiple `set`, `add` or `sub` methods together to conveniently update multiple components of a `Carbon`
+instance in one
 line.
 
 ##### Example

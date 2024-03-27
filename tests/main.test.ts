@@ -21,6 +21,74 @@ describe('Carbon.now()', (): void => {
     });
 });
 
+describe('Carbon.today()', (): void => {
+    test('returns instance of Carbon', (): void => {
+        expect(Carbon.today()).toBeInstanceOf(Carbon);
+    });
+
+    test('returns today\'s date with time set to start of the day', (): void => {
+        const carbon: string = Carbon.today('UTC').format('n/j/Y, H:i:s.v');
+        const date: string   = new Date().toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+
+    test('changes timezone correctly and sets time to start of the day', (): void => {
+        const carbon: string = Carbon.today('CET').format('n/j/Y, H:i:s.v');
+        const date: string   = new Date().toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+});
+
+describe('Carbon.tomorrow()', (): void => {
+    test('returns instance of Carbon', (): void => {
+        expect(Carbon.tomorrow()).toBeInstanceOf(Carbon);
+    });
+
+    test('returns tomorrow\'s date with time set to start of the day', (): void => {
+        const carbon: string = Carbon.tomorrow('UTC').format('n/j/Y, H:i:s.v');
+        let date: Date       = new Date();
+        date.setDate(date.getDate() + 1);
+        date = date.toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+
+    test('changes timezone correctly and sets time to start of the day', (): void => {
+        const carbon: string = Carbon.tomorrow('CET').format('n/j/Y, H:i:s.v');
+        let date: Date       = new Date();
+        date.setDate(date.getDate() + 1);
+        date = date.toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+});
+
+describe('Carbon.yesterday()', (): void => {
+    test('returns instance of Carbon', (): void => {
+        expect(Carbon.yesterday()).toBeInstanceOf(Carbon);
+    });
+
+    test('returns yesterday\'s date with time set to start of the day', (): void => {
+        const carbon: string = Carbon.yesterday('UTC').format('n/j/Y, H:i:s.v');
+        let date: Date       = new Date();
+        date.setDate(date.getDate() - 1);
+        date = date.toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+
+    test('changes timezone correctly and sets time to start of the day', (): void => {
+        const carbon: string = Carbon.yesterday('CET').format('n/j/Y, H:i:s.v');
+        let date: Date       = new Date();
+        date.setDate(date.getDate() - 1);
+        date = date.toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
+
+        expect(carbon).toBe(date);
+    });
+});
+
 describe('Carbon.parse()', (): void => {
     test('returns instance of Carbon', (): void => {
         expect(Carbon.parse()).toBeInstanceOf(Carbon);
@@ -265,6 +333,16 @@ describe('Carbon.isDst()', (): void => {
     });
 });
 
+describe('Carbon.isLeapYear()', (): void => {
+    test('returns true when the instance is in a leap year', (): void => {
+        expect(Carbon.parse('Feb 29, 2024', 'UTC').isLeapYear()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not in a leap year', (): void => {
+        expect(Carbon.parse('Feb 28, 2023', 'UTC').isLeapYear()).toBeFalsy();
+    });
+});
+
 describe('Carbon.isMonday()', (): void => {
     test('returns true when the instance\'s day is Monday', (): void => {
         expect(Carbon.parse('2024-03-04', 'UTC').isMonday()).toBeTruthy();
@@ -332,6 +410,219 @@ describe('Carbon.isSunday()', (): void => {
 
     test('returns false when the instance\'s day is not Sunday', (): void => {
         expect(Carbon.parse('2024-03-09', 'UTC').isSunday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isWeekday()', (): void => {
+    test('returns true when the instance is a weekday', (): void => {
+        expect(Carbon.parse('Mar 25, 2024', 'CET').isWeekday()).toBeTruthy();
+    });
+
+    test('returns false when the instance is a weekend day', (): void => {
+        expect(Carbon.parse('Mar 23, 2024', 'CET').isWeekday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isWeekend()', (): void => {
+    test('returns false when the instance is a weekday', (): void => {
+        expect(Carbon.parse('Mar 25, 2024', 'CET').isWeekend()).toBeFalsy();
+    });
+
+    test('returns true when the instance is a weekend day', (): void => {
+        expect(Carbon.parse('Mar 23, 2024', 'CET').isWeekend()).toBeTruthy();
+    });
+});
+
+describe('Carbon.isYesterday()', (): void => {
+    test('returns true when the instance is yesterday', (): void => {
+        const date: Date = new Date();
+        date.setDate(date.getDate() - 1);
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isYesterday()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not yesterday', (): void => {
+        const date: Date = new Date();
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isYesterday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isToday()', (): void => {
+    test('returns true when the instance is today', (): void => {
+        const date: Date = new Date();
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isToday()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not today', (): void => {
+        const date: Date = new Date();
+        date.setDate(date.getDate() - 1);
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isToday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isTomorrow()', (): void => {
+    test('returns true when the instance is tomorrow', (): void => {
+        const date: Date = new Date();
+        date.setDate(date.getDate() + 1);
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isTomorrow()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not tomorrow', (): void => {
+        const date: Date = new Date();
+
+        expect(Carbon.parse(date.toISOString(), 'CET').isTomorrow()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isDayOfWeek()', (): void => {
+    test('returns true when the instance is the day passed as a string', (): void => {
+        expect(Carbon.parse('Mar 25, 2024', 'CET').isDayOfWeek('monday')).toBeTruthy();
+    });
+
+    test('returns false when the instance is not the day passed as a string', (): void => {
+        expect(Carbon.parse('Mar 26, 2024', 'CET').isDayOfWeek('monday')).toBeFalsy();
+    });
+
+    test('returns true when the instance is the day passed as a numeric value', (): void => {
+        expect(Carbon.parse('Mar 26, 2024', 'CET').isDayOfWeek(2)).toBeTruthy();
+    });
+
+    test('returns false when the instance is not the day passed as a numeric value', (): void => {
+        expect(Carbon.parse('Mar 25, 2024', 'CET').isDayOfWeek(2)).toBeFalsy();
+    });
+});
+
+describe('Carbon.isBirthday()', (): void => {
+    test('returns true when the instance matches the date passed as a Carbon instance', (): void => {
+        const carbon = Carbon.parse('2024-03-25', 'CET');
+        const date   = new Carbon('1990-03-25');
+
+        expect(carbon.isBirthday(date)).toBeTruthy();
+    });
+
+    test('returns true when the instance matches the date passed as a string', (): void => {
+        const carbon = Carbon.parse('2024-03-25', 'CET');
+
+        expect(carbon.isBirthday('03-25')).toBeTruthy();
+    });
+
+    test('returns false when the instance does not match the date passed as a Carbon instance', (): void => {
+        const carbon = Carbon.parse('2024-03-25', 'CET');
+        const date   = new Carbon('1990-03-26');
+
+        expect(carbon.isBirthday(date)).toBeFalsy();
+    });
+
+    test('returns false when the instance does not match the date passed as a string', (): void => {
+        const carbon = Carbon.parse('2024-03-25', 'CET');
+
+        expect(carbon.isBirthday('03-26')).toBeFalsy();
+    });
+
+    test('returns false when no date is passed and the instance does not match the current date', (): void => {
+        const date: Date = new Date();
+        date.setDate(date.getDate() + 1);
+        const carbon = Carbon.parse(date.toISOString(), 'CET');
+
+        expect(carbon.isBirthday()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isLastOfMonth()', (): void => {
+    test('returns true when the instance is the last day of the month', (): void => {
+        const carbon = Carbon.parse('2024-03-31', 'CET');
+
+        expect(carbon.isLastOfMonth()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not the last day of the month', (): void => {
+        const carbon = Carbon.parse('2024-03-30', 'CET');
+
+        expect(carbon.isLastOfMonth()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isStartOfDay()', (): void => {
+    test('returns true when the instance is at the start of the day without checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 00:00:00', 'CET');
+
+        expect(carbon.isStartOfDay()).toBeTruthy();
+    });
+
+    test('returns true when the instance is at the start of the day with checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 00:00:00.000', 'CET');
+
+        expect(carbon.isStartOfDay(true)).toBeTruthy();
+    });
+
+    test('returns false when the instance is not at the start of the day without checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 00:00:01', 'CET');
+
+        expect(carbon.isStartOfDay()).toBeFalsy();
+    });
+
+    test('returns false when the instance is not at the start of the day with checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 00:00:00.001', 'CET');
+
+        expect(carbon.isStartOfDay(true)).toBeFalsy();
+    });
+});
+
+describe('Carbon.isEndOfDay()', (): void => {
+    test('returns true when the instance is at the end of the day without checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 23:59:59', 'CET');
+
+        expect(carbon.isEndOfDay()).toBeTruthy();
+    });
+
+    test('returns true when the instance is at the end of the day with checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 23:59:59.999', 'CET');
+
+        expect(carbon.isEndOfDay(true)).toBeTruthy();
+    });
+
+    test('returns false when the instance is not at the end of the day without checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 23:59:58', 'CET');
+
+        expect(carbon.isEndOfDay()).toBeFalsy();
+    });
+
+    test('returns false when the instance is not at the end of the day with checking milliseconds', (): void => {
+        const carbon = Carbon.parse('2024-03-30 23:59:59.998', 'CET');
+
+        expect(carbon.isEndOfDay(true)).toBeFalsy();
+    });
+});
+
+describe('Carbon.isMidnight()', (): void => {
+    test('returns true when the instance is at midnight', (): void => {
+        const carbon = Carbon.parse('2024-03-31 00:00:00', 'CET');
+
+        expect(carbon.isMidnight()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not at midnight', (): void => {
+        const carbon = Carbon.parse('2024-03-31 00:00:01', 'CET');
+
+        expect(carbon.isMidnight()).toBeFalsy();
+    });
+});
+
+describe('Carbon.isMidday()', (): void => {
+    test('returns true when the instance is at midday', (): void => {
+        const carbon = Carbon.parse('2024-03-31 12:00:00', 'CET');
+
+        expect(carbon.isMidday()).toBeTruthy();
+    });
+
+    test('returns false when the instance is not at midday', (): void => {
+        const carbon = Carbon.parse('2024-03-31 12:00:01', 'CET');
+
+        expect(carbon.isMidday()).toBeFalsy();
     });
 });
 
@@ -1545,7 +1836,7 @@ describe('Carbon.toDate()', (): void => {
 
 describe('Carbon.toString()', (): void => {
     test('returns the formatted date string', (): void => {
-        const carbon: Carbon = Carbon.now();
+        const carbon = Carbon.now();
 
         expect(carbon.toString()).toBe(carbon.date);
     });
@@ -1598,6 +1889,10 @@ describe('Carbon.get()', (): void => {
 
     test('\'dayOfYear\' returns the day of the year', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').get('dayOfYear')).toEqual(60);
+    });
+
+    test('\'daysInMonth\' returns the day of the year', (): void => {
+        expect(Carbon.parse('2024-02-29', 'CET').get('daysInMonth')).toEqual(29);
     });
 
     test('\'quarter\' returns the quarter', (): void => {
