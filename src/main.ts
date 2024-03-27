@@ -242,12 +242,21 @@ class Carbon {
     }
 
     /**
-     * Day of the year of this instance
+     * Day of the year of this instance.
      *
      * @returns { number }
      */
     get dayOfYear(): number {
         return this.get('dayOfYear') as number;
+    }
+
+    /**
+     * Number of days in the given month.
+     *
+     * @returns { number }
+     */
+    get daysInMonth(): number {
+        return this.get('daysInMonth') as number;
     }
 
     /**
@@ -394,6 +403,45 @@ class Carbon {
      */
     static now(timezone: Timezone | null = null): Carbon {
         return new Carbon('now', timezone);
+    }
+
+    /**
+     * Get a Carbon instance for today.
+     *
+     * @param { string | null } timezone
+     *
+     * @returns { Carbon }
+     */
+    static today(timezone: Timezone | null = null): Carbon {
+        const today: Carbon = Carbon.now(timezone);
+
+        return today.setTime(0, 0, 0, 0);
+    }
+
+    /**
+     * Get a Carbon instance for tomorrow.
+     *
+     * @param { string | null } timezone
+     *
+     * @returns { Carbon }
+     */
+    static tomorrow(timezone: Timezone | null = null): Carbon {
+        const today: Carbon = Carbon.today(timezone);
+
+        return today.addDays(today.offset > Constant.SecondsPerHour ? 0 : 1);
+    }
+
+    /**
+     * Get a Carbon instance for yesterday.
+     *
+     * @param { string | null } timezone
+     *
+     * @returns { Carbon }
+     */
+    static yesterday(timezone: Timezone | null = null): Carbon {
+        const today: Carbon = Carbon.today(timezone);
+
+        return today.subDays(today.offset > Constant.SecondsPerHour ? 2 : 1);
     }
 
     /**
@@ -803,6 +851,15 @@ class Carbon {
     }
 
     /**
+     * Determines if the instance is a leap year.
+     *
+     * @returns { boolean }
+     */
+    isLeapYear(): boolean {
+        return this.format('L') === '1';
+    }
+
+    /**
      * Determine if the instance's day is Monday.
      *
      * @returns { boolean }
@@ -863,6 +920,136 @@ class Carbon {
      */
     isSunday(): boolean {
         return this.dayOfWeek === DayOfTheWeek.Sunday;
+    }
+
+    /**
+     * Determines if the instance is a weekday.
+     *
+     * @returns { boolean }
+     */
+    isWeekday(): boolean {
+        return !this.isWeekend();
+    }
+
+    /**
+     * Determines if the instance is a weekend day.
+     *
+     * @returns { boolean }
+     */
+    isWeekend(): boolean {
+        return [DayOfTheWeek.Saturday, DayOfTheWeek.Sunday].includes(this.dayOfWeek);
+    }
+
+    /**
+     * Determines if the instance is today.
+     *
+     * @returns { boolean }
+     */
+    isToday(): boolean {
+        return this.toDateString() === Carbon.today(this.#timezone).toDateString();
+    }
+
+    /**
+     * Determines if the instance is tomorrow.
+     *
+     * @returns { boolean }
+     */
+    isTomorrow(): boolean {
+        return this.toDateString() === Carbon.tomorrow(this.#timezone).toDateString();
+    }
+
+    /**
+     * Determines if the instance is yesterday.
+     *
+     * @returns { boolean }
+     */
+    isYesterday(): boolean {
+        return this.toDateString() === Carbon.yesterday(this.#timezone).toDateString();
+    }
+
+    /**
+     * Determines if the instance is a specific day of the week.
+     *
+     * @param { string | number } day
+     *
+     * @returns { boolean }
+     */
+    isDayOfWeek(day: DayOfTheWeek | string): boolean {
+        const daysOfWeek: { [key: string]: number } = {
+            'sunday'   : 0,
+            'monday'   : 1,
+            'tuesday'  : 2,
+            'wednesday': 3,
+            'thursday' : 4,
+            'friday'   : 5,
+            'saturday' : 6,
+        };
+
+        return this.dayOfWeek === (typeof day === 'string' ? daysOfWeek[day.toLowerCase()] : day);
+    }
+
+    /**
+     * Determines if the instance is the birthday.
+     *
+     * @param { Carbon | string | null } date
+     *
+     * @returns { boolean }
+     */
+    isBirthday(date: Carbon | string | null = null): boolean {
+        return this.isSameAs('md', date);
+    }
+
+    /**
+     * Determines if today is the last day of the Month.
+     *
+     * @returns { boolean }
+     */
+    isLastOfMonth(): boolean {
+        return this.day === this.daysInMonth;
+    }
+
+    /**
+     * Determines if the instance is start of day.
+     *
+     * @param { boolean } checkMilliseconds
+     *
+     * @return { boolean }
+     */
+    isStartOfDay(checkMilliseconds: boolean = false): boolean {
+        return checkMilliseconds
+            ? this.format('H:i:s.v') === '00:00:00.000'
+            : this.format('H:i:s') === '00:00:00';
+    }
+
+    /**
+     * Determines if the instance is end of day.
+     *
+     * @param { boolean } checkMilliseconds
+     *
+     * @return { boolean }
+     */
+    isEndOfDay(checkMilliseconds: boolean = false): boolean {
+        return checkMilliseconds
+            ? this.format('H:i:s.v') === '23:59:59.999'
+            : this.format('H:i:s') === '23:59:59';
+    }
+
+    /**
+     * Determines if the instance is midnight.
+     *
+     * @return { boolean }
+     */
+    isMidnight(): boolean {
+        return this.isStartOfDay();
+    }
+
+    /**
+     * Determines if the instance is midday.
+     *
+     * @return { boolean }
+     */
+    isMidday(): boolean {
+        return this.format('G:i:s') === '12:00:00';
     }
 
     /**
@@ -1750,6 +1937,10 @@ class Carbon {
                 return parseInt(this.format('z'));
             }
 
+            case 'daysInMonth': {
+                return parseInt(this.format('t'));
+            }
+
             case 'quarter': {
                 return Math.ceil(this.get('month') as number / Constant.MonthsPerQuarter);
             }
@@ -1898,7 +2089,7 @@ class Carbon {
         this.#date.setMonth(month);
         this.#date.setDate(day);
 
-        return Carbon.parse(this.#date.toISOString());
+        return Carbon.parse(this.#date.toISOString(), this.#timezone);
     }
 
     /**
@@ -1912,12 +2103,17 @@ class Carbon {
      * @returns { Carbon }
      */
     setTime(hour: number, minute: number, second: number, millisecond: number): Carbon {
-        this.#date.setHours(hour);
-        this.#date.setMinutes(minute);
+        const diffInMinutes: number      = (this.#date.getTimezoneOffset() / Constant.SecondsPerMinute) * -1;
+        const offsetInHours: number      = this.offset / Constant.SecondsPerHour;
+        const offsetInMinutes: number    = offsetInHours % 1 * Constant.MinutesPerHour;
+        const localOffsetInHours: number = Math.round(diffInMinutes);
+
+        this.#date.setHours(hour - (Math[offsetInHours >= 0 ? 'floor' : 'round'](offsetInHours)) + localOffsetInHours);
+        this.#date.setMinutes(minute - offsetInMinutes);
         this.#date.setSeconds(second);
         this.#date.setMilliseconds(millisecond);
 
-        return Carbon.parse(this.#date.toISOString());
+        return Carbon.parse(this.#date.toISOString(), this.#timezone);
     }
 
     /**

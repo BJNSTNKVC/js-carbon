@@ -1,6 +1,6 @@
 {
   "name": "@bjnstnkvc/carbon",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "JavaScript equivalent of Carbon date and time manipulation library.",
   "main": "lib/main.js",
   "source": "src/main.ts",
