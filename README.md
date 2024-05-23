@@ -3660,3 +3660,283 @@ const carbon = Carbon.parse('2024-03-01 12:45:00')
 
 console.log(carbon); // 2021-11-26 02:14:39.500 UTC (+01:00)
 ```
+
+#### diff
+
+Get the difference between the current `Carbon` instance and another date as a `DateInterval` instance.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `false`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diff(date);
+
+console.log(diff); // - 1y 11m 30d 23:59:59.999
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diff(date, true);
+
+console.log(diff); // + 1y 11m 30d 23:59:59.999
+```
+
+### diffInMilliseconds
+
+Get the difference in milliseconds between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMilliseconds(date);
+
+console.log(diff); // 63158400000
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMilliseconds(date, false);
+
+console.log(diff); // -63158400000
+```
+
+### diffInSeconds
+
+Get the difference in seconds between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInSeconds(date);
+
+console.log(diff); // 63158400
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInSeconds(date, false);
+
+console.log(diff); // -63158400
+```
+
+### diffInMinutes
+
+Get the difference in minutes between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMinutes(date);
+
+console.log(diff); // 1052640
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMinutes(date, false);
+
+console.log(diff); // -1052640
+```
+
+### diffInHours
+
+Get the difference in hours between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInHours(date);
+
+console.log(diff); // 17544
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInHours(date, false);
+
+console.log(diff); // -17544
+```
+
+### diffInDays
+
+Get the difference in days between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInDays(date);
+
+console.log(diff); // 731
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInDays(date, false);
+
+console.log(diff); // -731
+```
+
+### diffInWeeks
+
+Get the difference in weeks between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInWeeks(date);
+
+console.log(diff); // 104
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInWeeks(date, false);
+
+console.log(diff); // -104
+```
+
+### diffInMonths
+
+Get the difference in months between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMonths(date);
+
+console.log(diff); // 24
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInMonths(date, false);
+
+console.log(diff); // -24
+```
+
+### diffInQuarters
+
+Get the difference in quarters between the current `Carbon` instance and another date, rounded down.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInQuarters(date);
+
+console.log(diff); // 8
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInQuarters(date, false);
+
+console.log(diff); // -8
+```
+
+### diffInYears
+
+Get the difference in years between the current `Carbon` instance and another date.
+
+###### Parameters
+
+- **date** - The date to compare with (e.g., another `Carbon` instance, `Date` object, or date string). Default
+  is `null`, which compares with the current date and time.
+- **absolute** - A boolean indicating whether the difference should be absolute. Default is `true`.
+
+##### Examples
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInYears(date);
+
+console.log(diff); // 2
+```
+
+```javascript
+const carbon = Carbon.parse('2024-03-01 12:45:00');
+const date   = Carbon.parse('2022-03-01 12:45:00');
+const diff   = carbon.diffInYears(date, false);
+
+console.log(diff); // -2
+```

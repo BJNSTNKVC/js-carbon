@@ -27,8 +27,8 @@ describe('Carbon.today()', (): void => {
     });
 
     test('returns today\'s date with time set to start of the day', (): void => {
-        const carbon: string = Carbon.today('UTC').format('n/j/Y, H:i:s.v');
-        const date: string   = new Date().toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+        const carbon: string = Carbon.today('CET').format('n/j/Y, H:i:s.v');
+        const date: string   = new Date().toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
 
         expect(carbon).toBe(date);
     });
@@ -47,10 +47,10 @@ describe('Carbon.tomorrow()', (): void => {
     });
 
     test('returns tomorrow\'s date with time set to start of the day', (): void => {
-        const carbon: string = Carbon.tomorrow('UTC').format('n/j/Y, H:i:s.v');
+        const carbon: string = Carbon.tomorrow('CET').format('n/j/Y, H:i:s.v');
         let date: Date       = new Date();
         date.setDate(date.getDate() + 1);
-        date = date.toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+        date = date.toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
 
         expect(carbon).toBe(date);
     });
@@ -71,10 +71,10 @@ describe('Carbon.yesterday()', (): void => {
     });
 
     test('returns yesterday\'s date with time set to start of the day', (): void => {
-        const carbon: string = Carbon.yesterday('UTC').format('n/j/Y, H:i:s.v');
+        const carbon: string = Carbon.yesterday('CET').format('n/j/Y, H:i:s.v');
         let date: Date       = new Date();
         date.setDate(date.getDate() - 1);
-        date = date.toLocaleDateString('en-US', { timeZone: 'UTC' }) + ', 00:00:00.000';
+        date = date.toLocaleDateString('en-US', { timeZone: 'CET' }) + ', 00:00:00.000';
 
         expect(carbon).toBe(date);
     });
@@ -290,11 +290,7 @@ describe('Carbon.format()', (): void => {
 
 describe('Carbon.isLocal()', (): void => {
     test('returns true when the instance is in the local timezone', (): void => {
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockReturnValue(0);
-
-        expect(Carbon.now('Europe/London').isLocal()).toBeTruthy();
-
-        jest.spyOn(Date.prototype, 'getTimezoneOffset').mockRestore();
+        expect(Carbon.now('Europe/Sarajevo').isLocal()).toBeTruthy();
     });
 
     test('returns false when the instance is not in the local timezone', (): void => {
@@ -304,7 +300,7 @@ describe('Carbon.isLocal()', (): void => {
 
 describe('Carbon.isUtc()', (): void => {
     test('returns true when the instance is in the UTC timezone', (): void => {
-        expect(Carbon.now('Europe/London').isUtc()).toBeTruthy();
+        expect(Carbon.now('UTC').isUtc()).toBeTruthy();
     });
 
     test('returns false when the instance is in the UTC timezone', (): void => {
@@ -2117,122 +2113,122 @@ describe('Carbon.addWeek()', (): void => {
     });
 });
 
-describe('Carbon.subYear()', () => {
-    test('subtracts one year from the instance', () => {
+describe('Carbon.subYear()', (): void => {
+    test('subtracts one year from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subYear().get('year')).toEqual(2023);
     });
 
-    test('subtracts multiple years from the instance', () => {
+    test('subtracts multiple years from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subYears(5).get('year')).toEqual(2019);
     });
 });
 
-describe('Carbon.subMonth()', () => {
-    test('subtracts one month from the instance', () => {
+describe('Carbon.subMonth()', (): void => {
+    test('subtracts one month from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subMonth().get('month')).toEqual(1);
     });
 
-    test('subtracts multiple months from the instance', () => {
+    test('subtracts multiple months from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subMonths(5).get('month')).toEqual(9);
     });
 });
 
-describe('Carbon.subDay()', () => {
-    test('subtracts one day from the instance', () => {
+describe('Carbon.subDay()', (): void => {
+    test('subtracts one day from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subDay().get('day')).toEqual(28);
     });
 
-    test('subtracts multiple days from the instance', () => {
+    test('subtracts multiple days from the instance', (): void => {
         expect(Carbon.parse('2024-02-29', 'CET').subDays(5).get('day')).toEqual(24);
     });
 });
 
-describe('Carbon.subHour()', () => {
-    test('subtracts one hour from the instance', () => {
+describe('Carbon.subHour()', (): void => {
+    test('subtracts one hour from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subHour().get('hour')).toEqual(11);
     });
 
-    test('subtracts multiple hours from the instance', () => {
+    test('subtracts multiple hours from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subHours(5).get('hour')).toEqual(7);
     });
 });
 
-describe('Carbon.subMinute()', () => {
-    test('subtracts one minute from the instance', () => {
+describe('Carbon.subMinute()', (): void => {
+    test('subtracts one minute from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subMinute().get('minute')).toEqual(59);
     });
 
-    test('subtracts multiple minutes from the instance', () => {
+    test('subtracts multiple minutes from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subMinutes(5).get('minute')).toEqual(55);
     });
 });
 
-describe('Carbon.subSecond()', () => {
-    test('subtracts one second from the instance', () => {
+describe('Carbon.subSecond()', (): void => {
+    test('subtracts one second from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subSecond().get('second')).toEqual(59);
     });
 
-    test('subtracts multiple seconds from the instance', () => {
+    test('subtracts multiple seconds from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00', 'CET').subSeconds(5).get('second')).toEqual(55);
     });
 });
 
-describe('Carbon.subMillisecond()', () => {
-    test('subtracts one millisecond from the instance', () => {
+describe('Carbon.subMillisecond()', (): void => {
+    test('subtracts one millisecond from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00.200', 'CET').subMillisecond().get('millisecond')).toEqual(199);
     });
 
-    test('subtracts multiple milliseconds from the instance', () => {
+    test('subtracts multiple milliseconds from the instance', (): void => {
         expect(Carbon.parse('2024-02-29T12:00:00.500', 'CET').subMilliseconds(5).get('millisecond')).toEqual(495);
     });
 });
 
-describe('Carbon.subMillennium()', () => {
-    test('subtracts one millennium from the instance', () => {
+describe('Carbon.subMillennium()', (): void => {
+    test('subtracts one millennium from the instance', (): void => {
         expect(Carbon.parse('3024-02-29', 'CET').subMillennium().get('year')).toEqual(2024);
     });
 
-    test('subtracts multiple millennia from the instance', () => {
+    test('subtracts multiple millennia from the instance', (): void => {
         expect(Carbon.parse('6024-02-29', 'CET').subMillenniums(4).get('year')).toEqual(2024);
     });
 });
 
-describe('Carbon.subCentury()', () => {
-    test('subtracts one century from the instance', () => {
+describe('Carbon.subCentury()', (): void => {
+    test('subtracts one century from the instance', (): void => {
         expect(Carbon.parse('2124-02-29', 'CET').subCentury().get('year')).toEqual(2024);
     });
 
-    test('subtracts multiple centuries from the instance', () => {
+    test('subtracts multiple centuries from the instance', (): void => {
         expect(Carbon.parse('2524-02-29', 'CET').subCenturies(5).get('year')).toEqual(2024);
     });
 });
 
-describe('Carbon.subDecade()', () => {
-    test('subtracts one decade from the instance', () => {
+describe('Carbon.subDecade()', (): void => {
+    test('subtracts one decade from the instance', (): void => {
         expect(Carbon.parse('2034-02-29', 'CET').subDecade().get('year')).toEqual(2024);
     });
 
-    test('subtracts multiple decades from the instance', () => {
+    test('subtracts multiple decades from the instance', (): void => {
         expect(Carbon.parse('2074-02-29', 'CET').subDecades(5).get('year')).toEqual(2024);
     });
 });
 
-describe('Carbon.subQuarter()', () => {
-    test('subtracts one quarter from the instance', () => {
+describe('Carbon.subQuarter()', (): void => {
+    test('subtracts one quarter from the instance', (): void => {
         expect(Carbon.parse('2024-08-29', 'CET').subQuarter().get('month')).toEqual(5);
     });
 
-    test('subtracts multiple quarters from the instance', () => {
+    test('subtracts multiple quarters from the instance', (): void => {
         expect(Carbon.parse('2024-11-29', 'CET').subQuarters(2).get('month')).toEqual(5);
     });
 });
 
-describe('Carbon.subWeek()', () => {
-    test('subtracts one week from the instance', () => {
+describe('Carbon.subWeek()', (): void => {
+    test('subtracts one week from the instance', (): void => {
         expect(Carbon.parse('2024-03-07', 'CET').subWeek().get('day')).toEqual(29);
     });
 
-    test('subtracts multiple weeks from the instance', () => {
+    test('subtracts multiple weeks from the instance', (): void => {
         expect(Carbon.parse('2024-03-21', 'CET').subWeeks(2).get('day')).toEqual(7);
     });
 });
@@ -2398,5 +2394,224 @@ describe('Carbon.subUnit()', (): void => {
 
     test('throws an error for an unsupported unit', (): void => {
         expect(() => Carbon.parse('2024-02-29', 'CET').subUnit('unsupported', 1)).toThrow('Unknown unit.');
+    });
+});
+
+describe('Carbon.diff()', (): void => {
+    test('returns instance of DateInterval', (): void => {
+        expect(Carbon.now('CET').diff()).toBeInstanceOf(DateInterval);
+    });
+
+    test('returns difference correctly', (): void => {
+        const diff: DateInterval = Carbon.now('CET').diff();
+
+        expect(diff.y).toBe(0);
+        expect(diff.m).toBe(0);
+        expect(diff.d).toBe(0);
+        expect(diff.h).toBe(0);
+        expect(diff.i).toBe(0);
+        expect(diff.s).toBe(0);
+        expect(diff.f).toBeLessThan(1000);
+        expect(diff.days).toBe(0);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: DateInterval = Carbon.now('CET').diff(Carbon.now('CET').subDay());
+
+        expect(diff.y).toBe(0);
+        expect(diff.m).toBe(0);
+        expect(diff.d).toBe(0);
+        expect(diff.h).toBe(23);
+        expect(diff.i).toBe(59);
+        expect(diff.s).toBe(59);
+        expect(diff.f).toBeLessThan(1000);
+        expect(diff.days).toBe(0);
+    });
+
+    test('returns difference absolutely when absolute is set to true', (): void => {
+        const diff: DateInterval = Carbon.now('CET').diff(Carbon.now('CET').subDay(), true);
+        const regex: RegExp      = /^\+ \d{2}:\d{2}:\d{2}\.\d{3}$/;
+
+        expect(regex.test(diff.interval)).toBeTruthy();
+    });
+});
+
+describe('Carbon.diffInMilliseconds()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subDay().diffInMilliseconds();
+
+        expect(diff).toBeLessThanOrEqual(86400000);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInMilliseconds(Carbon.now('CET').subDay());
+
+        expect(diff).toBeLessThanOrEqual(86400000);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInMilliseconds(Carbon.now('CET').subDay(), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-86400000);
+    });
+});
+
+describe('Carbon.diffInSeconds()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subDay().diffInSeconds();
+
+        expect(diff).toBe(86400);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInSeconds(Carbon.now('CET').subDay());
+
+        expect(diff).toBeLessThanOrEqual(86400);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInSeconds(Carbon.now('CET').subDay(), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-86400);
+    });
+});
+
+describe('Carbon.diffInMinutes()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subDay().diffInMinutes();
+
+        expect(diff).toBe(1440);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInMinutes(Carbon.now('CET').subDay());
+
+        expect(diff).toBeLessThanOrEqual(1440);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInMinutes(Carbon.now('CET').subDay(), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-1440);
+    });
+});
+
+describe('Carbon.diffInDays()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now().subDay().diffInDays();
+
+        expect(diff).toBe(1);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInDays(Carbon.now('CET').subDays(2));
+
+        expect(diff).toBeLessThanOrEqual(1);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInDays(Carbon.now('CET').subDays(2), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-1);
+    });
+});
+
+describe('Carbon.diffInHours()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subDay().diffInHours();
+
+        expect(diff).toBe(24);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInHours(Carbon.now('CET').subDay());
+
+        expect(diff).toBeLessThanOrEqual(24);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInHours(Carbon.now('CET').subDay(), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-24);
+    });
+});
+
+describe('Carbon.diffInWeeks()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subWeek().diffInWeeks();
+
+        expect(diff).toBe(1);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInWeeks(Carbon.now('CET').subWeeks(2));
+
+        expect(diff).toBeLessThanOrEqual(1);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInWeeks(Carbon.now('CET').subDay(), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-1);
+    });
+});
+
+describe('Carbon.diffInMonths()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subMonth().diffInMonths();
+
+        expect(diff).toBe(1);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInMonths(Carbon.now('CET').subMonths(2));
+
+        expect(diff).toBeLessThanOrEqual(2);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInMonths(Carbon.now('CET').subMonths(2), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-2);
+    });
+});
+
+describe('Carbon.diffInQuarters()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subQuarter().diffInQuarters();
+
+        expect(diff).toBe(1);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInQuarters(Carbon.now('CET').subQuarters(2));
+
+        expect(diff).toBeLessThanOrEqual(2);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInQuarters(Carbon.now('CET').subQuarters(2), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-2);
+    });
+});
+
+describe('Carbon.diffInYears()', (): void => {
+    test('returns difference correctly', (): void => {
+        const diff: number = Carbon.now('CET').subYear().diffInYears();
+
+        expect(diff).toBe(1);
+    });
+
+    test('returns difference correctly relative to passed date', (): void => {
+        const diff: number = Carbon.now('CET').diffInYears(Carbon.now('CET').subYear(2));
+
+        expect(diff).toBeLessThanOrEqual(1);
+    });
+
+    test('returns difference relatively when absolute is set to false', (): void => {
+        const diff: number = Carbon.now('CET').diffInYears(Carbon.now('CET').subYear(2), false);
+
+        expect(diff).toBeGreaterThanOrEqual(-2);
     });
 });

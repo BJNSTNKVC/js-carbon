@@ -8,6 +8,21 @@ enum DayOfTheWeek {
     Saturday  = 6,
 }
 
+enum MonthOfTheYear {
+    January   = 0,
+    February  = 1,
+    March     = 2,
+    April     = 3,
+    May       = 4,
+    June      = 5,
+    July      = 6,
+    August    = 7,
+    September = 8,
+    October   = 9,
+    November  = 10,
+    December  = 11
+}
+
 enum Constant {
     YearsPerMillennium         = 1000,
     YearsPerCentury            = 100,
@@ -19,6 +34,7 @@ enum Constant {
     WeeksPerMonth              = 4,
     DaysPerYear                = 365,
     DaysPerWeek                = 7,
+    DaysPerMonth               = 30.436875,
     HoursPerDay                = 24,
     MinutesPerHour             = 60,
     SecondsPerMinute           = 60,
@@ -26,7 +42,7 @@ enum Constant {
     MillisecondsPerSecond      = 1000,
     MillisecondsPerDay         = 86400000,
     MicrosecondsPerMillisecond = 1000,
-    MicrosecondsPerSecond      = 1000000
+    MicrosecondsPerSecond      = 1000000,
 }
 
 class Carbon {
@@ -428,7 +444,7 @@ class Carbon {
     static tomorrow(timezone: Timezone | null = null): Carbon {
         const today: Carbon = Carbon.today(timezone);
 
-        return today.addDays(today.offset > Constant.SecondsPerHour ? 0 : 1);
+        return today.addDay();
     }
 
     /**
@@ -441,7 +457,7 @@ class Carbon {
     static yesterday(timezone: Timezone | null = null): Carbon {
         const today: Carbon = Carbon.today(timezone);
 
-        return today.subDays(today.offset > Constant.SecondsPerHour ? 2 : 1);
+        return today.subDay();
     }
 
     /**
@@ -1559,7 +1575,7 @@ class Carbon {
      *
      * @private
      *
-     * @param { Carbon | Date | string | null} date
+     * @param { Carbon | Date | string | null } date
      *
      * @return { Carbon }
      */
@@ -2673,6 +2689,660 @@ class Carbon {
     subUnit(unit: DateUnit | MetaUnit, value: number = 1): Carbon {
         return this.addUnit(unit, -value);
     }
+
+    /**
+     * Get the difference as a DateInterval instance.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { DateInterval }
+     */
+    diff(date: Carbon | Date | string | null = null, absolute: boolean = false): DateInterval {
+        date = this.#resolveCarbon(date);
+
+        return new DateInterval(this.#date, date.#date, absolute);
+    }
+
+    /**
+     * Get the difference in milliseconds rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInMilliseconds(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        const diff: DateInterval  = this.diff(date);
+        const diffInHours: number = (diff.m || diff.y ? diff.days : diff.d) * Constant.HoursPerDay;
+
+        const value: number = Math.round((((diffInHours + diff.h) * Constant.MinutesPerHour + diff.i) * Constant.SecondsPerMinute + (diff.s)) * Constant.MillisecondsPerSecond);
+
+        return absolute || !diff.invert ? value : -value;
+    }
+
+    /**
+     * Get the difference in seconds rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInSeconds(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        let diff: DateInterval = this.diff(date);
+
+        if (diff.days === 0) {
+            diff = Carbon.fixDiffInterval(diff, absolute);
+        }
+
+        let value: number = ((((diff.m || diff.y ? diff.days : diff.d) * Constant.HoursPerDay) + diff.h) * Constant.MinutesPerHour + diff.i) * Constant.SecondsPerMinute + diff.s;
+
+        return absolute || !diff.invert ? value : -value;
+    }
+
+    /**
+     * Get the difference in minutes rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInMinutes(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return Math[absolute ? 'floor' : 'ceil'](this.diffInSeconds(date, absolute) / Constant.SecondsPerMinute);
+    }
+
+    /**
+     * Get the difference in hours rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInHours(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return Math[absolute ? 'floor' : 'ceil'](this.diffInSeconds(date, absolute) / Constant.SecondsPerMinute / Constant.MinutesPerHour);
+    }
+
+    /**
+     * Get the difference in days rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInDays(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return Math[absolute ? 'floor' : 'ceil'](this.diffInSeconds(date, absolute) / Constant.SecondsPerMinute / Constant.MinutesPerHour / Constant.HoursPerDay);
+    }
+
+    /**
+     * Get the difference in weeks rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInWeeks(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return Math[absolute ? 'floor' : 'ceil'](this.diffInDays(date, absolute) / Constant.DaysPerWeek);
+    }
+
+    /**
+     * Get the difference in months rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return { number }
+     */
+    diffInMonths(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        const [yearStart, monthStart, dayStart]: string[] = this.format('Y-m-dHisv').split('-');
+        const [yearEnd, monthEnd, dayEnd]: string[]       = this.#resolveCarbon(date).format('Y-m-dHisv').split('-');
+
+        const diffInYears: number  = parseInt(yearEnd as string) - parseInt(yearStart as string);
+        const diffInMonths: number = parseInt(monthEnd as string) - parseInt(monthStart as string);
+
+        let diff: number = diffInYears * Constant.MonthsPerYear + diffInMonths;
+
+        if (diff > 0) {
+            diff -= (parseInt(dayStart as string) > parseInt(dayEnd as string) ? 1 : 0);
+        } else if (diff < 0) {
+            diff += (parseInt(dayStart as string) < parseInt(dayEnd as string) ? 1 : 0);
+        }
+
+        return absolute ? Math.abs(diff) : diff;
+    }
+
+    /**
+     * Get the difference in quarters rounded down.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return int
+     */
+    diffInQuarters(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return Math[absolute ? 'floor' : 'ceil'](this.diffInMonths(date, absolute) / Constant.MonthsPerQuarter);
+    }
+
+    /**
+     * Get the difference in years.
+     *
+     * @param { Carbon | Date | string | null } date
+     * @param { boolean } absolute
+     *
+     * @return int
+     */
+    diffInYears(date: Carbon | Date | string | null = null, absolute: boolean = true): number {
+        return parseInt(this.diff(date, absolute).format('%r%y'));
+    }
+
+    /**
+     * Fixes the given DateInterval to create a CarbonInterval.
+     *
+     * @param { DateInterval } diff
+     * @param { boolean } absolute
+     *
+     * @returns { DateInterval }
+     *
+     * @see https://bugs.php.net/bug.php?id=77145
+     */
+    static fixDiffInterval(diff: DateInterval, absolute: boolean): DateInterval {
+        if (diff.f > 0 && diff.y === -1 && diff.m === 11 && diff.d >= 27 && diff.h === 23 && diff.i === 59 && diff.s === 59) {
+            diff.y      = 0;
+            diff.m      = 0;
+            diff.d      = 0;
+            diff.h      = 0;
+            diff.i      = 0;
+            diff.s      = 0;
+            diff.f      = (1000000 - Math.round(diff.f * 1000000)) / 1000000;
+            diff.invert = absolute ? 0 : diff.invert;
+        }
+
+        return diff;
+    }
+}
+
+class DateInterval {
+    /**
+     * Number of years.
+     *
+     * @type { number }
+     */
+    #y: number = 0;
+
+    /**
+     * Number of months.
+     *
+     * @type { number }
+     */
+    #m: number = 0;
+
+    /**
+     * Number of days.
+     *
+     * @type { number }
+     */
+    #d: number = 0;
+
+    /**
+     * Number of hours.
+     *
+     * @type { number }
+     */
+    #h: number = 0;
+
+    /**
+     * Number of minutes.
+     *
+     * @type { number }
+     */
+    #i: number = 0;
+
+    /**
+     * Number of seconds.
+     *
+     * @type { number }
+     */
+    #s: number = 0;
+
+    /**
+     * Number of milliseconds.
+     *
+     * @type { number }
+     */
+    #f: number = 0;
+
+    /**
+     * Total number of days the interval spans.
+     *
+     * @type { number }
+     */
+    #days: number = 0;
+
+    /**
+     * Is 1 if the interval is inverted and 0 otherwise
+     *
+     * @type { number }
+     */
+    #invert: number = 0;
+
+    /**
+     * Formatted interval.
+     *
+     * @type { string }
+     */
+    interval: string;
+
+    /**
+     * Get number of years for the given Interval.
+     *
+     * @returns { number }
+     */
+    get y(): number {
+        return this.#y;
+    }
+
+    /**
+     * Get number of months for the given Interval.
+     *
+     * @returns { number }
+     */
+    get m(): number {
+        return this.#m;
+    }
+
+    /**
+     * Get number of days for the given Interval.
+     *
+     * @returns { number }
+     */
+    get d(): number {
+        return this.#d;
+    }
+
+    /**
+     * Get number of hours for the given Interval.
+     *
+     * @returns { number }
+     */
+    get h(): number {
+        return this.#h;
+    }
+
+    /**
+     * Get number of minutes for the given Interval.
+     *
+     * @returns { number }
+     */
+    get i(): number {
+        return this.#i;
+    }
+
+    /**
+     * Get number of seconds for the given Interval.
+     *
+     * @returns { number }
+     */
+    get s(): number {
+        return this.#s;
+    }
+
+    /**
+     * Get number of milliseconds for the given Interval.
+     *
+     * @returns { number }
+     */
+    get f(): number {
+        return this.#f;
+    }
+
+    /**
+     * Get total number of days the interval spans.
+     *
+     * @returns { number }
+     */
+    get days(): number {
+        return this.#days;
+    }
+
+    /**
+     * Get inversion for the given Interval.
+     *
+     * @returns { number }
+     */
+    get invert(): number {
+        return this.#invert;
+    }
+
+    /**
+     * Set number of years for the given Interval.
+     *
+     * @param { number } value
+     */
+    set y(value: number) {
+        this.#y = value;
+    }
+
+    /**
+     * Set number of months for the given Interval.
+     *
+     * @param { number } value
+     */
+    set m(value: number) {
+        this.#m = value;
+    }
+
+    /**
+     * Set number of days for the given Interval.
+     *
+     * @param { number } value
+     */
+    set d(value: number) {
+        this.#d = value;
+    }
+
+    /**
+     * Set number of hours for the given Interval.
+     *
+     * @param { number } value
+     */
+    set h(value: number) {
+        this.#h = value;
+    }
+
+    /**
+     * Set number of minutes for the given Interval.
+     *
+     * @param { number } value
+     */
+    set i(value: number) {
+        this.#i = value;
+    }
+
+    /**
+     * Set number of seconds for the given Interval.
+     *
+     * @param { number } value
+     */
+    set s(value: number) {
+        this.#s = value;
+    }
+
+    /**
+     * Set number of milliseconds for the given Interval.
+     *
+     * @param { number } value
+     */
+    set f(value: number) {
+        this.#f = value;
+    }
+
+    /**
+     * Set inversion for the given Interval.
+     *
+     * @param { number } value
+     */
+    set invert(value: number) {
+        this.#invert = value;
+    }
+
+    /**
+     * Set total number of days the interval spans.
+     *
+     * @param { number } value
+     */
+    set days(value: number) {
+        this.#days = value;
+    }
+
+    /**
+     * Create new DateInterval instance.
+     *
+     * @param { Date } base
+     * @param { Date } target
+     * @param { boolean } absolute
+     */
+    constructor(base: Date, target: Date, absolute: boolean = false) {
+        const start: Date    = base < target ? base : target;
+        const end: Date      = base > target ? base : target;
+        const invert: number = base > target ? 1 : 0;
+
+        const daysPerMonth = (month: number, year: number): number => {
+            if ([MonthOfTheYear.January, MonthOfTheYear.March, MonthOfTheYear.May, MonthOfTheYear.July, MonthOfTheYear.August, MonthOfTheYear.October, MonthOfTheYear.December].includes(month)) {
+                return 31;
+            }
+
+            if ([MonthOfTheYear.April, MonthOfTheYear.June, MonthOfTheYear.September, MonthOfTheYear.November].includes(month)) {
+                return 30;
+            }
+
+            if (((year % 4 == 0) && (year % 100 != 0)) || (year % 400 == 0)) {
+                return 29;
+            }
+
+            return 28;
+        };
+
+        let diffInMilliseconds: number = Math.abs(start.getTime() - end.getTime());
+        let years: number              = end.getFullYear() - start.getFullYear();
+        let months: number             = end.getMonth() - start.getMonth();
+        let days: number               = end.getDate() - start.getDate();
+        let hours: number              = end.getHours() - start.getHours();
+        let minutes: number            = end.getMinutes() - start.getMinutes();
+        let seconds: number            = end.getSeconds() - start.getSeconds();
+        let milliseconds: number       = end.getMilliseconds() - start.getMilliseconds();
+
+        if (milliseconds < 0) {
+            milliseconds += Constant.MillisecondsPerSecond;
+            seconds -= 1;
+        }
+
+        if (seconds < 0) {
+            seconds += Constant.SecondsPerMinute;
+            minutes -= 1;
+        }
+
+        if (minutes < 0) {
+            minutes += Constant.MinutesPerHour;
+            hours -= 1;
+        }
+
+        if (hours < 0) {
+            hours += Constant.HoursPerDay;
+        }
+
+        if (days < 0) {
+            days += daysPerMonth(start.getMonth(), start.getFullYear());
+            months -= 1;
+
+            if (!invert) {
+                days -= Number(daysPerMonth(start.getMonth(), start.getFullYear()) === daysPerMonth(end.getMonth(), end.getFullYear()));
+            }
+        }
+
+        if (days === 0 && invert) {
+            days = 31;
+            months -= 1;
+        }
+
+        if (months < 0) {
+            months += Constant.MonthsPerYear;
+            years -= 1;
+        }
+
+        this.y        = Math.floor(years);
+        this.m        = months;
+        this.d        = Math.max(days - invert, 0);
+        this.h        = hours;
+        this.i        = minutes;
+        this.s        = seconds;
+        this.f        = milliseconds;
+        this.days     = Math.floor(diffInMilliseconds / Constant.MillisecondsPerDay);
+        this.invert   = invert;
+        this.interval = absolute ? this.toString().replace('-', '+') : this.toString();
+    }
+
+    /**
+     * Formats the interval.
+     *
+     * @param { string } format
+     *
+     * @returns { string }
+     */
+    format(format: string): string {
+        let interval: string = '';
+
+        const elements: RegExpMatchArray | null = format.match(/%?.|./g);
+
+        for (const element of elements!) {
+            switch (element) {
+                // Years, numeric, at least 2 digits with leading 0 (e.g., 01, 03)
+                case '%Y':
+                    interval += this.y.toString().padStart(2, '0');
+
+                    break;
+
+                // Years, numeric 0 (e.g., 1, 3)
+                case '%y':
+                    interval += this.y;
+
+                    break;
+
+                // Months, numeric, at least 2 digits with leading 0 (e.g., 01, 03, 12)
+                case '%M':
+                    interval += this.m.toString().padStart(2, '0');
+
+                    break;
+
+                // Months, numeric (e.g., 1, 3, 12)
+                case '%m':
+                    interval += this.m;
+
+                    break;
+
+                // Days, numeric, at least 2 digits with leading 0 (e.g., 01, 03, 31)
+                case '%D':
+                    interval += this.d.toString().padStart(2, '0');
+
+                    break;
+
+                // Days, numeric (e.g., 1, 3, 31)
+                case '%d':
+                    interval += this.d;
+
+                    break;
+
+                // Total number of days (e.g., 4, 18, 8123)
+                case '%a':
+                    interval += this.days;
+
+                    break;
+
+                // Hours, numeric, at least 2 digits with leading 0 (e.g., 01, 03, 23)
+                case '%H':
+                    interval += this.h.toString().padStart(2, '0');
+
+                    break;
+
+                // Hours, numeric (e.g., 1, 3, 23)
+                case '%h':
+                    interval += this.h;
+
+                    break;
+
+                // Minutes, numeric, at least 2 digits with leading 0 (e.g., 01, 03, 59)
+                case '%I':
+                    interval += this.i.toString().padStart(2, '0');
+
+                    break;
+
+                // Minutes, numeric (e.g., 1, 3, 59)
+                case '%i':
+                    interval += this.i;
+
+                    break;
+
+                // Seconds, numeric, at least 2 digits with leading 0 (e.g., 01, 03, 57)
+                case '%S':
+                    interval += this.s.toString().padStart(2, '0');
+
+                    break;
+
+                // Seconds, numeric (e.g., 1, 3, 57)
+                case '%s':
+                    interval += this.s;
+
+                    break;
+
+                // Milliseconds, numeric, at least 3 digits with leading 0 (e.g., 007, 052, 428)
+                case '%F':
+                    interval += this.f.toString().padStart(3, '0');
+
+                    break;
+
+                // Milliseconds, numeric (e.g., 7, 52, 428)
+                case '%f':
+                    interval += this.f;
+
+                    break;
+
+                // Sign "-" when negative, "+" when positive (e.g., -, +)
+                case '%R':
+                    interval += this.invert ? '-' : '+';
+
+                    break;
+
+                // Sign "-" when negative, empty when positive (e.g., -,)
+                case '%r':
+                    interval += this.invert ? '-' : '';
+
+                    break;
+
+                default:
+                    interval += element.length >= 2 && element.indexOf('%') > -1 ? element.replace('%', '') : element;
+            }
+        }
+
+        return interval;
+
+    }
+
+    /**
+     * Returns the formatted interval.
+     *
+     * @returns { string }
+     */
+    toJson(): object {
+        return {
+            y       : this.y,
+            m       : this.m,
+            d       : this.d,
+            h       : this.h,
+            i       : this.i,
+            s       : this.s,
+            f       : this.f,
+            days    : this.days,
+            invert  : this.invert,
+            interval: this.interval
+        };
+    }
+
+    /**
+     * Returns the formatted interval.
+     *
+     * @returns { string }
+     */
+    toString(): string {
+        const years: string  = this.y ? `%${this.y}y` : '';
+        const months: string = this.m ? `%${this.m}m` : '';
+        const days: string   = this.d ? `%${this.d}d` : '';
+        const format: string = `%R ${years} ${months} ${days} %H:%I:%S.%F`.replace(/ +(?= )/g, '');
+
+        return this.format(format);
+    }
 }
 
 if (typeof exports != 'undefined') {
@@ -2683,5 +3353,6 @@ if (typeof exports != 'undefined') {
 if (typeof global !== 'undefined') {
     const _global: any = global;
 
-    _global.Carbon = Carbon;
+    _global.Carbon       = Carbon;
+    _global.DateInterval = DateInterval;
 }

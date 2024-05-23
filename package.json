@@ -1,6 +1,6 @@
 {
   "name": "@bjnstnkvc/carbon",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JavaScript equivalent of Carbon date and time manipulation library.",
   "main": "lib/main.js",
   "source": "src/main.ts",
@@ -8,7 +8,7 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "jest --config jestconfig.json ./tests",
+    "test": "env TZ='CET' jest --config jestconfig.json ./tests",
     "build": "tsc",
     "prod": "tsc && uglifyjs lib/main.js -c -m -o lib/main.min.js"
   },
