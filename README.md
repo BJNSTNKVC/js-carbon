@@ -3661,6 +3661,10 @@ const carbon = Carbon.parse('2024-03-01 12:45:00')
 console.log(carbon); // 2021-11-26 02:14:39.500 UTC (+01:00)
 ```
 
+### Difference
+
+Calculate the precise difference between two dates or times using Carbon's robust methods.
+
 ### diff
 
 Get the difference between the current `Carbon` instance and another date as a `DateInterval` instance.
